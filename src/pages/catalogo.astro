@@ -1,0 +1,24 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import ProductGrid from "../components/ProductGrid.jsx";
+
+import { productService } from "../services/productService";
+
+const productos = await productService.getAllProducts();
+---
+
+<Layout title="Catálogo | Nordika Wear">
+  <div class="bg-gray-50 min-h-screen pb-20">
+    <header class="bg-white shadow-sm border-b border-gray-200 mb-10">
+      <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Colección Completa</h1>
+        <p class="text-gray-500">Explora, filtra y encuentra tu próxima prenda favorita.</p>
+      </div>
+    </header>
+
+    <section class="container mx-auto px-4">
+      <ProductGrid client:load productos={productos} />
+    </section>
+  </div>
+</Layout>

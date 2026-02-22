@@ -1,0 +1,35 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import ProductDetail from "../../components/ProductDetail.jsx";
+import { productService } from "../../services/productService";
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect("/404");
+}
+// --------------------------
+
+const product = await productService.getProductBySlug(slug);
+
+if (!product) {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout title={`${product.name} | Nordika Wear`}>
+  <div class="bg-white min-h-screen py-10 md:py-20">
+    <div class="container mx-auto px-4 max-w-6xl">
+      <nav class="flex text-sm text-gray-500 mb-8 md:mb-12">
+        <a href="/" class="hover:text-black transition">Inicio</a>
+        <span class="mx-2">/</span>
+        <a href="/catalogo" class="hover:text-black transition">Catálogo</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900 font-bold truncate max-w-[200px]">{product.name}</span>
+      </nav>
+
+      <ProductDetail client:load product={product} />
+    </div>
+  </div>
+</Layout>

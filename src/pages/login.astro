@@ -1,0 +1,107 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Iniciar Sesión | Nordika Wear">
+  <section class="min-h-screen flex items-center justify-center bg-gray-950 p-4">
+    <div
+      class="max-w-4xl w-full bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-800"
+    >
+      <div class="relative w-full h-48 md:h-auto md:w-1/2 bg-indigo-600">
+        <img
+          src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80"
+          alt="Ropa personalizada"
+          class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50"
+        />
+        <div class="relative z-10 p-6 md:p-10 flex flex-col justify-center h-full text-white">
+          <h2 class="text-3xl md:text-4xl font-bold mb-2 md:mb-4">Nordika Wear</h2>
+          <p class="text-indigo-100 italic text-sm md:text-base">"Tu estilo, tus reglas."</p>
+        </div>
+      </div>
+
+      <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+        <h3 class="text-2xl font-bold text-white mb-2">Bienvenido de nuevo</h3>
+        <p class="text-gray-400 mb-8">Ingresa tus datos para acceder</p>
+
+        <form class="space-y-6" id="loginForm">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Usuario (o Email)</label>
+            <input
+              type="text"
+              name="username"
+              required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-indigo-500 outline-none transition"
+              placeholder="Tu usuario"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <p id="loginMessage" class="text-center text-sm font-bold mt-2 hidden"></p>
+
+          <button
+            type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition-all transform hover:scale-[1.02]"
+            >Entrar
+          </button>
+        </form>
+
+        <p class="mt-8 text-center text-sm text-gray-500">
+          ¿No tienes una cuenta? <a href="/registro" class="text-indigo-400 hover:underline">Registrate aquí</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { authService } from "../services/authService";
+
+  const form = document.getElementById("loginForm") as HTMLFormElement;
+  const messageApi = document.getElementById("loginMessage") as HTMLParagraphElement;
+
+  if (form && messageApi) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+
+      try {
+        messageApi.textContent = "Verificando...";
+        messageApi.className = "text-yellow-400 text-center text-sm font-bold mt-2 block";
+
+        await authService.login(data);
+
+        messageApi.textContent = "¡Login correcto!";
+        messageApi.className = "text-green-400 text-center text-sm font-bold mt-2 block";
+        setTimeout(() => (window.location.href = "/"), 1000);
+      } catch (error: any) {
+        console.error(error);
+
+        // Lógica de mensajes de error en español
+        const serverDetail = error.response?.data?.detail;
+        let mensajeEspañol = "Ocurrió un error inesperado";
+
+        if (serverDetail === "No active account found with the given credentials") {
+          mensajeEspañol = "Correo o contraseña incorrectos. Inténtalo de nuevo.";
+        } else if (error.response?.status === 401) {
+          mensajeEspañol = "No tienes permiso para acceder o tu cuenta no está activa.";
+        } else if (error.code === "ERR_NETWORK") {
+          mensajeEspañol = "No se pudo conectar con el servidor. Revisa tu internet.";
+        }
+
+        messageApi.textContent = mensajeEspañol;
+        messageApi.className = "text-red-400 text-center text-sm font-bold mt-2 block";
+      }
+    });
+  }
+</script>

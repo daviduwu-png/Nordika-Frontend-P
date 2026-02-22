@@ -1,0 +1,45 @@
+---
+import { ShoppingCart } from "lucide-react";
+
+interface Props {
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  slug: string;
+}
+
+const { name, price, image, category, slug } = Astro.props;
+---
+
+<a
+  href={`/producto/${slug}`}
+  class="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer h-full flex flex-col block"
+>
+  <div class="aspect-square overflow-hidden bg-gray-100 relative">
+    <img
+      src={image}
+      alt={name}
+      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+    />
+
+    <div
+      class="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+    >
+      <div
+        class="w-full bg-white text-gray-900 font-bold py-2 rounded-lg shadow-lg hover:bg-gray-50 flex items-center justify-center gap-2"
+      >
+        <ShoppingCart size={18} />
+        <span>Ver Detalles</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 flex flex-col flex-1">
+    <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">{category}</p>
+    <h3 class="text-lg font-bold text-gray-900 truncate">{name}</h3>
+    <div class="flex items-center justify-between mt-auto pt-4">
+      <span class="text-xl font-bold text-indigo-600">${price}</span>
+    </div>
+  </div>
+</a>

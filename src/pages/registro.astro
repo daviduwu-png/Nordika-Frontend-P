@@ -1,0 +1,172 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Crear Cuenta | Nordika Wear">
+  <section class="relative min-h-screen flex items-stretch">
+    <div class="absolute inset-0 z-0">
+      <img
+        src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80"
+        class="w-full h-full object-cover opacity-40"
+        alt="Fondo textura"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-gray-950/90 via-gray-950/70 to-gray-950"></div>
+    </div>
+
+    <div
+      class="relative z-10 w-full md:w-1/2 flex items-center justify-center p-6 bg-transparent md:bg-gray-900 transition-colors duration-300"
+    >
+      <div
+        class="w-full max-w-md bg-gray-900/60 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border border-white/10 md:border-none rounded-3xl p-8 shadow-2xl md:shadow-none"
+      >
+        <div class="mb-8 text-center md:text-left">
+          <h2 class="text-3xl font-extrabold text-white inline-block pb-2 border-b-2 border-indigo-500">
+            Únete a Nordika
+          </h2>
+          <p class="text-gray-300 mt-2 text-sm">Crea tu cuenta y empieza a personalizar.</p>
+        </div>
+
+        <form class="space-y-5" id="registerForm">
+          <div class="flex gap-4">
+            <div class="w-1/2">
+              <label class="block text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2"> Nombre </label>
+              <input
+                type="text"
+                name="first_name"
+                required
+                class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-gray-500"
+                placeholder="Juan"
+              />
+            </div>
+
+            <div class="w-1/2">
+              <label class="block text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2"> Apellidos </label>
+              <input
+                type="text"
+                name="last_name"
+                required
+                class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-gray-500"
+                placeholder="Pérez"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2">
+              Nombre de Usuario
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-gray-500"
+              placeholder="JuanPerez99"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-gray-500"
+              placeholder="hola@ejemplo.com"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-gray-500"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <p id="formMessage" class="text-center text-sm font-bold mt-2 hidden"></p>
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95 mt-4"
+          >
+            Crear mi cuenta
+          </button>
+        </form>
+
+        <p class="mt-8 text-center text-sm text-gray-400">
+          ¿Ya eres miembro? <a href="/login" class="text-indigo-400 hover:text-indigo-300 font-bold transition">
+            Inicia sesión
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="hidden md:block md:w-1/2 relative z-10">
+      <img
+        src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80"
+        alt="Moda urbana"
+        class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
+      />
+      <div class="absolute inset-0 bg-gradient-to-l from-transparent to-gray-900"></div>
+
+      <div class="absolute bottom-0 right-0 p-12 text-right z-20">
+        <h3 class="text-5xl font-bold text-white mb-2 tracking-tight">Estilo Propio</h3>
+        <p class="text-indigo-200 text-xl font-light">Diseña sin límites.</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { authService } from "../services/authService";
+
+  const form = document.getElementById("registerForm") as HTMLFormElement;
+  const messageApi = document.getElementById("formMessage") as HTMLParagraphElement;
+
+  if (form && messageApi) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      try {
+        messageApi.textContent = "Procesando registro...";
+        messageApi.className = "text-yellow-400 text-center text-sm font-bold mt-2 block";
+        await authService.register(data);
+        messageApi.textContent = "¡Cuenta creada! Redirigiendo al login...";
+        messageApi.className = "text-green-400 text-center text-sm font-bold mt-2 block";
+
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      } catch (error: any) {
+        console.error(error);
+
+        let mensajeEspañol = "Ocurrió un error inesperado";
+        const errorData = error.response?.data;
+
+        if (error.code === "ERR_NETWORK") {
+          mensajeEspañol = "No se pudo conectar con el servidor. Revisa tu internet.";
+        } else if (error.response?.status === 400 && errorData) {
+          if (errorData.username) {
+            mensajeEspañol = "Este nombre de usuario ya está en uso o no es válido.";
+          } else if (errorData.email) {
+            mensajeEspañol = "El correo electrónico ya está registrado o es inválido.";
+          } else if (errorData.password) {
+            mensajeEspañol = "La contraseña no cumple con los requisitos mínimos.";
+          } else {
+            mensajeEspañol = "Datos incorrectos. Revisa la información ingresada.";
+          }
+        }
+
+        messageApi.textContent = mensajeEspañol;
+        messageApi.className = "text-red-400 text-center text-sm font-bold mt-2 block";
+      }
+    });
+  }
+</script>

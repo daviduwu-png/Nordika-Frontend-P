@@ -1,0 +1,29 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-gray-900 text-white py-10 pt-4">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-20">
+      <div>
+        <h3 class="text-2xl font-bold text-indigo-400 mb-4">Nordika Wear</h3>
+        <p class="text-gray-400">Ropa personalizada con estilo único.</p>
+      </div>
+
+      <div>
+        <h4 class="font-semi-bold mb-4 text-lg">Contacto</h4>
+        <p class="text-gray-400">calle</p>
+        <p class="text-gray-400">ayuda@BluStore.com</p>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <p>&copy;{year} Nordika Wear. Todos los derechos reservados.</p>
+        <div class="flex items-center gap-2">
+          <span class="uppercase tracking-widest text-[14px]">Powered By</span>
+          <img src="/insolus.png" alt="Insolus" class="h-14 w-auto opacity-80 hover:opacity-100 transition" />
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

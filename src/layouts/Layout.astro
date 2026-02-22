@@ -1,0 +1,23 @@
+---
+import Navbar from "../components/Navbar.jsx";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+---
+
+<html lang="es">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/logo-nordika.jpg" />
+    <title>Nordika Wear</title>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <Navbar client:load />
+
+    <main class="min-h-screen">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProductCustomizer from "../components/ProductCustomizer.jsx";
+---
+
+<Layout title="Diseña tu Ropa | Nordika Wear">
+  <div class="bg-gray-50 min-h-screen py-10">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Crea tu Estilo Único</h1>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          Selecciona tu color favorito, sube tu diseño y colócalo donde quieras. Nosotros nos encargamos de hacerlo
+          realidad.
+        </p>
+      </div>
+
+      <ProductCustomizer client:only="react" />
+    </div>
+  </div>
+</Layout>
