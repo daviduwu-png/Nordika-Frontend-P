@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ProductCard from "../components/ProductCard.astro";
+import { Truck, Gem, ShieldCheck } from "lucide-react";
 
 import { productService } from "../services/productService";
 const productos = await productService.getAllProducts();
@@ -83,27 +84,59 @@ const productosDestacados = productos.slice(0, 4);
     </div>
   </section>
 
-  <section class="py-20 bg-gray-50 border-t border-gray-200">
-    <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-      <div class="p-6">
-        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-          🚀
-        </div>
-        <h4 class="text-xl font-bold mb-2">Envío Rápido</h4>
-        <p class="text-gray-600">Recibe tus diseños personalizados en tiempo récord.</p>
+  <section class="py-24 bg-white border-t border-gray-100">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h3 class="text-3xl font-bold text-gray-900 tracking-tight">Por qué elegir Nordika</h3>
+        <p class="text-gray-500 mt-4 max-w-2xl mx-auto">Nos dedicamos a brindarte la mejor experiencia de compra con beneficios diseñados especialmente para ti.</p>
       </div>
-      <div class="p-6">
-        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-          💎
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center max-w-6xl mx-auto">
+        <div class="p-6 group hover:-translate-y-2 transition-transform duration-300">
+          <div class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all">
+            <Truck size={28} strokeWidth={1.5} />
+          </div>
+          <h4 class="text-lg font-bold mb-3 text-gray-900 tracking-tight">Envío Rápido</h4>
+          <p class="text-gray-500 leading-relaxed text-sm">Recibe tus diseños personalizados en tiempo récord, directo a la puerta de tu casa.</p>
         </div>
-        <h4 class="text-xl font-bold mb-2">Calidad Premium</h4>
-        <p class="text-gray-600">Telas seleccionadas para durar y sentirse increíbles.</p>
-      </div>
-      <div class="p-6">
-        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🛡️</div>
-        <h4 class="text-xl font-bold mb-2">Pago Seguro</h4>
-        <p class="text-gray-600">Tus transacciones protegidas con la mejor tecnología.</p>
+
+        <div class="p-6 group hover:-translate-y-2 transition-transform duration-300">
+          <div class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all">
+            <Gem size={28} strokeWidth={1.5} />
+          </div>
+          <h4 class="text-lg font-bold mb-3 text-gray-900 tracking-tight">Calidad Premium</h4>
+          <p class="text-gray-500 leading-relaxed text-sm">Telas seleccionadas cuidadosamente para durar, mantener su forma y sentirse increíbles.</p>
+        </div>
+
+        <div class="p-6 group hover:-translate-y-2 transition-transform duration-300">
+          <div class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all">
+            <ShieldCheck size={28} strokeWidth={1.5} />
+          </div>
+          <h4 class="text-lg font-bold mb-3 text-gray-900 tracking-tight">Cifrado Seguro</h4>
+          <p class="text-gray-500 leading-relaxed text-sm">Tus datos y transacciones están protegidas con tecnología de seguridad de última generación.</p>
+        </div>
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  import { sileo } from "sileo";
+
+  const welcomeName = sessionStorage.getItem("show_welcome");
+  if (welcomeName) {
+    sessionStorage.removeItem("show_welcome");
+    setTimeout(() => {
+      sileo.info({
+        title: `¡Bienvenido, ${welcomeName}!`,
+        description: "Es un placer verte por aquí",
+        duration: 5000,
+        styles: {
+          title: "text-blue-400 font-bold",
+          description: "text-gray-300 text-center block w-full",
+        }
+      });
+    }, 400);
+  }
+</script>
+

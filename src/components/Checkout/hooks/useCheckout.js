@@ -1,0 +1,315 @@
+import { useState, useEffect } from "react";
+import { useStore } from "@nanostores/react";
+import { cartItems, removeCartItem } from "../../../store/cartStore";
+import { orderService } from "../../../services/orderService";
+import { paymentService } from "../../../services/paymentService";
+import { profileService } from "../../../services/profileService";
+import { loadStripe } from "@stripe/stripe-js";
+import { ENVIO_GRATIS_DESDE, COSTO_ENVIO } from "../components/OrderSummary.jsx";
+
+// Cargar Stripe una sola vez fuera del hook (evita re-creación en cada render)
+const stripePromise = loadStripe(
+    import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+);
+
+export function useCheckout() {
+    // ── Carrito ───────────────────────────────────────────────────────────────────
+    const $cartItems = useStore(cartItems);
+    const items = Object.values($cartItems);
+
+    // ── Hidratación SSR ───────────────────────────────────────────────────────────
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => { setIsMounted(true); }, []);
+
+    // ── Totales ───────────────────────────────────────────────────────────────────
+    const subtotal = items.reduce(
+        (acc, item) => acc + Number(item.price) * item.cantidad,
+        0
+    );
+    const envio = subtotal >= ENVIO_GRATIS_DESDE ? 0 : COSTO_ENVIO;
+    const total = subtotal + envio;
+
+    // ── Formulario de contacto ────────────────────────────────────────────────────
+    const [email, setEmail] = useState("");
+    const [telefono, setTelefono] = useState("");
+
+    // ── Formulario de envío ───────────────────────────────────────────────────────
+    const [nombre, setNombre] = useState("");
+    const [apellidos, setApellidos] = useState("");
+    const [calle, setCalle] = useState("");
+    const [colonia, setColonia] = useState("");
+    const [cp, setCp] = useState("");
+    const [ciudad, setCiudad] = useState("");
+    const [estado, setEstado] = useState("");
+
+    // ── Direcciones Guardadas ─────────────────────────────────────────────────────
+    const [savedAddresses, setSavedAddresses] = useState([]);
+    const [selectedAddressId, setSelectedAddressId] = useState("new");
+    const [loadingAddresses, setLoadingAddresses] = useState(true);
+
+    useEffect(() => {
+        const fetchAddresses = async () => {
+            try {
+                // Solo intentar si hay un token (usuario autenticado)
+                if (localStorage.getItem("access_token")) {
+                    const data = await profileService.getAddresses();
+                    setSavedAddresses(data);
+
+                    // Si tiene una dirección predeterminada, seleccionarla automáticamente
+                    const defaultAddress = data.find((addr) => addr.is_default) || data[0];
+                    if (defaultAddress) {
+                        handleSelectAddress(defaultAddress.id.toString(), data);
+                    }
+                }
+            } catch (error) {
+                console.error("Error al cargar direcciones guardadas", error);
+            } finally {
+                setLoadingAddresses(false);
+            }
+        };
+
+        if (isMounted) {
+            fetchAddresses();
+        }
+    }, [isMounted]);
+
+    const handleSelectAddress = (id, addresses = savedAddresses) => {
+        setSelectedAddressId(id);
+
+        if (id === "new") {
+            // Limpiar formulario
+            setCalle("");
+            setColonia("");
+            setCp("");
+            setCiudad("");
+            setEstado("");
+            return;
+        }
+
+        const address = addresses.find((a) => a.id.toString() === id);
+        if (address) {
+            // Llenar formulario con la dirección guardada
+            const fullStreet = address.interior_number
+                ? `${address.street} ${address.exterior_number} Int ${address.interior_number}`
+                : `${address.street} ${address.exterior_number}`;
+
+            setCalle(fullStreet);
+            setColonia(address.neighborhood);
+            setCp(address.postal_code);
+            setCiudad(address.city);
+            setEstado(address.state || "");
+            if (address.phone && !telefono) setTelefono(address.phone);
+        }
+    };
+
+    // ── Datos de tarjeta (Stripe) ─────────────────────────────────────────────────
+    const [cardNumber, setCardNumber] = useState("");
+    const [cardExpiry, setCardExpiry] = useState("");
+    const [cardCvc, setCardCvc] = useState("");
+    const [cardName, setCardName] = useState("");
+
+    // ── Estado del proceso de pago ────────────────────────────────────────────────
+    const [metodoPago, setMetodoPago] = useState("stripe"); // "stripe" | "mercadopago"
+    const [loadingOrder, setLoadingOrder] = useState(false);
+    const [orderError, setOrderError] = useState("");
+    const [orderSuccess, setOrderSuccess] = useState(false);
+    const [orderSuccessId, setOrderSuccessId] = useState(null);
+
+    
+
+    /** Dirección en formato texto para el campo shipping_address del backend */
+    const buildShippingAddress = () =>
+        `${nombre} ${apellidos}\n${calle}, Col. ${colonia}\n${ciudad}, ${estado} ${cp}\nTel: ${telefono}`;
+
+    /** Items en formato que espera POST /api/orders/ */
+    const buildOrderItems = () =>
+        items.map((item) => ({
+            product: item.id,
+            variant: item.selectedVariant?.id || null,
+            quantity: item.cantidad,
+            customization_fee: 0,
+        }));
+
+    /** Items en formato que espera POST /api/payments/mercadopago/create-preference/ */
+    const buildMPItems = () => {
+        const mpItems = items.map((item) => ({
+            product_id: item.id,
+            name: item.name + (item.selectedVariant ? ` (${item.selectedVariant.size})` : ""),
+            quantity: item.cantidad,
+            unit_price: Number(item.price),
+        }));
+
+        if (envio > 0) {
+            mpItems.push({
+                product_id: "SHIPPING",
+                name: "Costo de Envío Nacional",
+                quantity: 1,
+                unit_price: envio,
+            });
+        }
+
+        return mpItems;
+    };
+
+    
+
+    const clearCart = () => {
+        Object.keys($cartItems).forEach((key) => removeCartItem(key));
+    };
+
+    const validateForm = () => {
+        if (!email || !nombre || !apellidos || !calle || !colonia || !cp || !ciudad) {
+            setOrderError("Por favor completa todos los campos de contacto y envío.");
+            return false;
+        }
+        return true;
+    };
+
+
+    /**
+     * Flujo Stripe:
+     *  1. Crear orden en el backend (status = pending)
+     *  2. Crear PaymentIntent vía nuestro backend
+     *  3. Confirmar pago con Stripe.js (confirmCardPayment)
+     *  4. Actualizar la orden con stripe_payment_id y status = paid
+     */
+    const handlePagarStripe = async () => {
+        setOrderError("");
+        if (!validateForm()) return;
+
+        if (!cardNumber || !cardExpiry || !cardCvc || !cardName) {
+            setOrderError("Completa los datos de tu tarjeta.");
+            return;
+        }
+
+        setLoadingOrder(true);
+        try {
+            const createdOrder = await orderService.createOrder({
+                shipping_address: buildShippingAddress(),
+                items: buildOrderItems(),
+            });
+
+            const { client_secret } = await paymentService.createStripeIntent(total);
+
+            const stripe = await stripePromise;
+            if (!stripe || !client_secret) {
+                throw new Error("No se pudo inicializar Stripe. Verifica tu clave pública.");
+            }
+
+            const [expMonth, expYear] = cardExpiry.split("/").map((s) => s.trim());
+            const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
+                client_secret,
+                {
+                    payment_method: {
+                        card: {
+                            number: cardNumber.replace(/\s/g, ""),
+                            exp_month: parseInt(expMonth),
+                            exp_year: parseInt(`20${expYear}`),
+                            cvc: cardCvc,
+                        },
+                        billing_details: { name: cardName, email },
+                    },
+                }
+            );
+
+            if (stripeError) throw new Error(stripeError.message);
+
+            if (paymentIntent?.status === "succeeded") {
+                await orderService.updateOrder(createdOrder.id, {
+                    status: "paid",
+                    stripe_payment_id: paymentIntent.id,
+                });
+            }
+
+            clearCart();
+            setOrderSuccessId(createdOrder.id);
+            setOrderSuccess(true);
+            setTimeout(() => { window.location.href = "/cuenta"; }, 3000);
+        } catch (error) {
+            console.error(error);
+            setOrderError(
+                error.message || "Hubo un error al procesar tu pago. Inténtalo de nuevo."
+            );
+        } finally {
+            setLoadingOrder(false);
+        }
+    };
+
+    /**
+     * Flujo Mercado Pago:
+     *  1. Crear orden en el backend (status = pending)
+     *  2. Crear Preference en MP vía nuestro backend
+     *  3. Redirigir al checkout de MP (sandbox_init_point en TEST, init_point en PROD)
+     */
+    const handlePagarMP = async () => {
+        setOrderError("");
+        if (!validateForm()) return;
+
+        setLoadingOrder(true);
+        try {
+            await orderService.createOrder({
+                shipping_address: buildShippingAddress(),
+                items: buildOrderItems(),
+            });
+
+            const { sandbox_init_point, init_point } =
+                await paymentService.createMPPreference(buildMPItems());
+
+            const redirectUrl = sandbox_init_point || init_point;
+            if (!redirectUrl) {
+                throw new Error("No se recibió la URL de pago de Mercado Pago.");
+            }
+
+            clearCart();
+            window.location.href = redirectUrl;
+        } catch (error) {
+            console.error(error);
+            setOrderError(
+                error.message || "Hubo un error al iniciar el pago con Mercado Pago."
+            );
+        } finally {
+            setLoadingOrder(false);
+        }
+    };
+
+    // ─── Valor de retorno del hook ────────────────────────────────────────────────
+    return {
+        // Carrito e hidratación
+        items,
+        isMounted,
+        // Totales
+        subtotal,
+        envio,
+        total,
+        // Contacto
+        email, setEmail,
+        telefono, setTelefono,
+        // Dirección
+        nombre, setNombre,
+        apellidos, setApellidos,
+        calle, setCalle,
+        colonia, setColonia,
+        cp, setCp,
+        ciudad, setCiudad,
+        estado, setEstado,
+        // Direcciones Guardadas
+        savedAddresses,
+        selectedAddressId,
+        handleSelectAddress,
+        loadingAddresses,
+        // Tarjeta Stripe
+        cardNumber, setCardNumber,
+        cardExpiry, setCardExpiry,
+        cardCvc, setCardCvc,
+        cardName, setCardName,
+        // Estado del pago
+        metodoPago, setMetodoPago,
+        loadingOrder,
+        orderError,
+        orderSuccess,
+        orderSuccessId,
+        // Handlers
+        handlePagarStripe,
+        handlePagarMP,
+    };
+}

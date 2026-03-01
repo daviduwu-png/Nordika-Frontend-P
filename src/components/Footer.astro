@@ -1,27 +1,92 @@
 ---
+import { Instagram, Facebook, Twitter, Mail, MapPin, Phone } from "lucide-react";
+
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-gray-900 text-white py-10 pt-4">
+<footer class="bg-gray-950 text-white pt-16 pb-8 border-t border-gray-900">
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-20">
-      <div>
-        <h3 class="text-2xl font-bold text-indigo-400 mb-4">Nordika Wear</h3>
-        <p class="text-gray-400">Ropa personalizada con estilo único.</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+      <!-- Branding & Socials -->
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-3xl font-extrabold tracking-tight text-white mb-2">Nordika</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Redefiniendo el estilo urbano con prendas de alta calidad y diseños exclusivos que hablan por ti.
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all border border-gray-800 hover:border-indigo-500">
+            <Instagram size={18} />
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all border border-gray-800 hover:border-indigo-500">
+            <Facebook size={18} />
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all border border-gray-800 hover:border-indigo-500">
+            <Twitter size={18} />
+          </a>
+        </div>
       </div>
 
+      <!-- Links: Tienda -->
       <div>
-        <h4 class="font-semi-bold mb-4 text-lg">Contacto</h4>
-        <p class="text-gray-400">calle</p>
-        <p class="text-gray-400">ayuda@BluStore.com</p>
+        <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Tienda</h4>
+        <ul class="space-y-4">
+          <li><a href="/catalogo" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Todo el Catálogo</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Nueva Colección</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Más Vendidos</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Ofertas Especiales</a></li>
+        </ul>
+      </div>
+
+      <!-- Links: Soporte -->
+      <div>
+        <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Soporte</h4>
+        <ul class="space-y-4">
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Preguntas Frecuentes</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Envíos y Entregas</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Cambios y Devoluciones</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors text-sm">Guía de Tallas</a></li>
+        </ul>
+      </div>
+
+      <!-- Links: Contacto -->
+      <div>
+        <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Contacto</h4>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3 text-gray-400 text-sm">
+            <MapPin size={18} className="text-indigo-500 shrink-0 mt-0.5" />
+            <span>Puebla de Zaragoza, Puebla<br/>CP *****</span>
+          </li>
+          <li class="flex items-center gap-3 text-gray-400 text-sm">
+            <Phone size={18} className="text-indigo-500 shrink-0" />
+            <span>+52 55 1234 5678</span>
+          </li>
+          <li class="flex items-center gap-3 text-gray-400 text-sm">
+            <Mail size={18} className="text-indigo-500 shrink-0" />
+            <span>nordikawsoporte@gmail.coms</span>
+          </li>
+        </ul>
       </div>
     </div>
-    <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <p>&copy;{year} Nordika Wear. Todos los derechos reservados.</p>
-        <div class="flex items-center gap-2">
-          <span class="uppercase tracking-widest text-[14px]">Powered By</span>
-          <img src="/insolus.png" alt="Insolus" class="h-14 w-auto opacity-80 hover:opacity-100 transition" />
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-gray-900 pt-8 pb-4">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <p class="text-gray-500 text-sm">
+          &copy; {year} Nordika Wear. Todos los derechos reservados.
+        </p>
+        
+        <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-sm text-gray-500">
+          <div class="flex gap-6">
+            <a href="#" class="hover:text-white transition-colors">Aviso de Privacidad</a>
+            <a href="#" class="hover:text-white transition-colors">Términos de Servicio</a>
+          </div>
+          
+          <div class="flex items-center gap-3 md:ml-4 md:pl-6 md:border-l border-gray-800">
+            <span class="uppercase tracking-widest text-[10px] font-bold text-gray-600">Powered By</span>
+            <img src="/insolus.png" alt="Insolus" class="h-15 w-auto opacity-70 hover:opacity-100 transition-opacity " />
+          </div>
         </div>
       </div>
     </div>

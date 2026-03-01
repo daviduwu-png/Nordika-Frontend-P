@@ -61,13 +61,20 @@ export default function Navbar() {
 
               {isMounted && $user ? (
                 // Usuario Logueado
-                <div className="flex items-center gap-3 animate-fade-in">
-                  <span className="text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full">
-                    Hola, {$user.name}
+                <div className="flex items-center gap-4 animate-fade-in">
+                  <span className="text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full hidden lg:inline-block">
+                    {$user.name}
                   </span>
+                  <a
+                    href="/cuenta"
+                    className="text-gray-500 hover:text-indigo-600 transition tooltip flex items-center gap-1"
+                    title="Mi Cuenta"
+                  >
+                    <User size={20} />
+                  </a>
                   <button
                     onClick={logout}
-                    className="text-gray-400 hover:text-red-500 transition tooltip"
+                    className="text-gray-400 hover:text-red-500 transition tooltip flex items-center gap-1"
                     title="Cerrar Sesión"
                   >
                     <LogOut size={20} />
@@ -114,12 +121,20 @@ export default function Navbar() {
             </a>
 
             {isMounted && $user ? (
-              <button
-                onClick={logout}
-                className="bg-red-50 text-red-600 w-full py-3 rounded-xl font-bold mt-2 flex items-center justify-center gap-2"
-              >
-                <LogOut size={18} /> Cerrar Sesión ({$user.name})
-              </button>
+              <div className="flex flex-col gap-2 mt-2">
+                <a
+                  href="/cuenta"
+                  className="bg-indigo-50 text-indigo-600 w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2"
+                >
+                  <User size={18} /> Mi Cuenta
+                </a>
+                <button
+                  onClick={logout}
+                  className="bg-red-50 text-red-600 w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2"
+                >
+                  <LogOut size={18} /> Cerrar Sesión ({$user.name})
+                </button>
+              </div>
             ) : (
               <a href="/login" className="bg-gray-900 text-white text-center py-3 rounded-xl font-bold mt-2">
                 Iniciar Sesión

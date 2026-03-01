@@ -1,5 +1,6 @@
 import { atom } from "nanostores";
 import { persistentMap } from "@nanostores/persistent";
+import { sileo } from "sileo";
 
 export const isCartOpen = atom(false);
 
@@ -23,7 +24,7 @@ export function addCartItem(producto) {
   const cantidadActual = existingEntry ? existingEntry.cantidad : 0;
 
   if (cantidadActual + 1 > stockDisponible) {
-    alert(`Lo sentimos, solo hay ${stockDisponible} unidades disponibles de esta talla.`);
+    sileo.warning({ title: `Lo sentimos, solo hay ${stockDisponible} unidades disponibles de esta talla.` });
     return;
   }
 

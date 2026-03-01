@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { addCartItem } from "../store/cartStore";
 import { ShoppingBag, Truck, ShieldCheck, Ruler } from "lucide-react";
+import { sileo } from "sileo";
 
 export default function ProductDetail({ product }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
 
   const handleAddToCart = () => {
     if (product.variants && product.variants.length > 0 && !selectedVariant) {
-      alert("Por favor selecciona una talla.");
+      sileo.info({ title: "Por favor selecciona una talla." });
       return;
     }
 
@@ -65,11 +66,10 @@ export default function ProductDetail({ product }) {
                     disabled={isOutOfStock}
                     className={`
                                     min-w-[3.5rem] h-14 rounded-xl border-2 font-bold text-sm transition-all
-                                    ${
-                                      isSelected
-                                        ? "border-black bg-black text-white shadow-lg scale-105"
-                                        : "border-gray-200 bg-white text-gray-900 hover:border-black"
-                                    }
+                                    ${isSelected
+                        ? "border-black bg-black text-white shadow-lg scale-105"
+                        : "border-gray-200 bg-white text-gray-900 hover:border-black"
+                      }
                                     ${isOutOfStock ? "opacity-50 cursor-not-allowed decoration-slice line-through bg-gray-50" : ""}
                                 `}
                   >

@@ -20,4 +20,24 @@ export const productService = {
       return null;
     }
   },
+
+  async getProductsByCategory(category: string) {
+    try {
+      const response = await api.get(`/products/category/${category}/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error buscando productos por categoría ${category}:`, error);
+      return [];
+    }
+  },
+
+  async getProductVariants(productId: number) {
+    try {
+      const response = await api.get(`/products/${productId}/variants/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error obteniendo variantes para producto ${productId}:`, error);
+      return [];
+    }
+  },
 };

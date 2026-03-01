@@ -9,9 +9,8 @@ const { slug } = Astro.params;
 if (!slug) {
   return Astro.redirect("/404");
 }
-// --------------------------
 
-const product = await productService.getProductBySlug(slug);
+const product = await productService.getProductBySlug(slug as string);
 
 if (!product) {
   return Astro.redirect("/404");
