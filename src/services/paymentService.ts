@@ -4,11 +4,11 @@ export const paymentService = {
     /**
      * Stripe — solicita al backend un PaymentIntent y devuelve el client_secret
      * para confirmar el pago desde el frontend con @stripe/stripe-js.
+     * El backend toma el monto directamente de la orden (más seguro).
      */
-    async createStripeIntent(amount: number, currency = "mxn") {
+    async createStripeIntent(orderId: number) {
         const response = await api.post("/payments/stripe/create-intent/", {
-            amount,
-            currency,
+            order_id: orderId,
         });
         return response.data; // { client_secret, publishable_key }
     },
@@ -16,18 +16,12 @@ export const paymentService = {
     /**
      * Mercado Pago — solicita al backend una Preference y devuelve el
      * sandbox_init_point (test) e init_point (producción).
+     * El backend construye los items desde la orden en DB (más seguro).
      */
-    async createMPPreference(
-        items: {
-            product_id: number | string;
-            name: string;
-            quantity: number;
-            unit_price: number;
-        }[]
-    ) {
+    async createMPPreference(orderId: number) {
         const response = await api.post(
             "/payments/mercadopago/create-preference/",
-            { items }
+            { order_id: orderId }
         );
         return response.data; // { preference_id, init_point, sandbox_init_point }
     },

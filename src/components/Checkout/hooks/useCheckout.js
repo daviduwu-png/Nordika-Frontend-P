@@ -137,28 +137,8 @@ export function useCheckout() {
             customization_fee: 0,
         }));
 
-    /** Items en formato que espera POST /api/payments/mercadopago/create-preference/ */
-    const buildMPItems = () => {
-        const mpItems = items.map((item) => ({
-            product_id: item.id,
-            name: item.name + (item.selectedVariant ? ` (${item.selectedVariant.size})` : ""),
-            quantity: item.cantidad,
-            unit_price: Number(item.price),
-        }));
 
-        if (envio > 0) {
-            mpItems.push({
-                product_id: "SHIPPING",
-                name: "Costo de Envío Nacional",
-                quantity: 1,
-                unit_price: envio,
-            });
-        }
 
-        return mpItems;
-    };
-
-    
 
     const clearCart = () => {
         Object.keys($cartItems).forEach((key) => removeCartItem(key));
@@ -190,19 +170,22 @@ export function useCheckout() {
 
         setLoadingOrder(true);
         try {
+            // 1. Crear la orden en el backend (status = pending)
             const createdOrder = await orderService.createOrder({
                 shipping_address: buildShippingAddress(),
                 items: buildOrderItems(),
             });
 
-            const { client_secret } = await paymentService.createStripeIntent(total);
+            // 2. Pedir el PaymentIntent al backend pasando el order_id
+            //    El backend toma el monto de la BD (no del frontend → más seguro)
+            const { client_secret } = await paymentService.createStripeIntent(createdOrder.id);
 
             if (!stripe || !elements || !client_secret) {
                 throw new Error("No se pudo inicializar Stripe. Verifica tu conexión o clave pública.");
             }
 
+            // 3. Confirmar el pago con Stripe.js
             const cardElement = elements.getElement(CardNumberElement);
-
             const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
                 client_secret,
                 {
@@ -216,16 +199,15 @@ export function useCheckout() {
             if (stripeError) throw new Error(stripeError.message);
 
             if (paymentIntent?.status === "succeeded") {
-                await orderService.updateOrder(createdOrder.id, {
-                    status: "paid",
-                    stripe_payment_id: paymentIntent.id,
-                });
+                // El webhook de Stripe actualiza el status en la BD automáticamente.
+                // No necesitamos llamar updateOrder aquí (evita condiciones de carrera).
+                clearCart();
+                setOrderSuccessId(createdOrder.id);
+                setOrderSuccess(true);
+                setTimeout(() => { window.location.href = "/pago-exitoso"; }, 1500);
+            } else {
+                throw new Error("El pago no fue confirmado por Stripe. Inténtalo de nuevo.");
             }
-
-            clearCart();
-            setOrderSuccessId(createdOrder.id);
-            setOrderSuccess(true);
-            setTimeout(() => { window.location.href = "/pago-exitoso"; }, 1500);
         } catch (error) {
             console.error(error);
             sileo.error({ 
@@ -248,19 +230,23 @@ export function useCheckout() {
 
         setLoadingOrder(true);
         try {
-            await orderService.createOrder({
+            // 1. Crear la orden en el backend (status = pending)
+            const createdOrder = await orderService.createOrder({
                 shipping_address: buildShippingAddress(),
                 items: buildOrderItems(),
             });
 
+            // 2. Pedir la Preference a MP pasando el order_id
+            //    El backend construye los items desde la BD (no del frontend → más seguro)
             const { sandbox_init_point, init_point } =
-                await paymentService.createMPPreference(buildMPItems());
+                await paymentService.createMPPreference(createdOrder.id);
 
             const redirectUrl = sandbox_init_point || init_point;
             if (!redirectUrl) {
                 throw new Error("No se recibió la URL de pago de Mercado Pago.");
             }
 
+            // 3. Limpiar carrito ANTES de redirigir
             clearCart();
             window.location.href = redirectUrl;
         } catch (error) {
