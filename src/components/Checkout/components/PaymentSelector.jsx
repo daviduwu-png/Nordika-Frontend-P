@@ -1,16 +1,25 @@
 import { CreditCard, Lock } from "lucide-react";
+import { CardNumberElement, CardExpiryElement, CardCvcElement } from "@stripe/react-stripe-js";
 import { StripeLogo, MPLogo } from "./Logos.jsx";
 
-export const formatCardNumber = (val) =>
-    val.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
-
-export const formatExpiry = (val) => {
-    const clean = val.replace(/\D/g, "").slice(0, 4);
-    return clean.length > 2 ? `${clean.slice(0, 2)} / ${clean.slice(2)}` : clean;
-};
-
 // ─── Panel de Stripe ────────────────────────────────────────────────────────
-function StripePanel({ cardNumber, setCardNumber, cardExpiry, setCardExpiry, cardCvc, setCardCvc, cardName, setCardName }) {
+function StripePanel({ cardName, setCardName }) {
+    const ELEMENT_OPTIONS = {
+        style: {
+            base: {
+                color: "#1f2937",
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                fontSmoothing: "antialiased",
+                fontSize: "14px",
+                "::placeholder": { color: "#9ca3af" }
+            },
+            invalid: {
+                color: "#ef4444",
+                iconColor: "#ef4444"
+            }
+        }
+    };
+
     return (
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4 animate-fade-in">
             <p className="text-xs text-gray-500 flex items-center gap-1">
@@ -23,16 +32,10 @@ function StripePanel({ cardNumber, setCardNumber, cardExpiry, setCardExpiry, car
                     Número de tarjeta
                 </label>
                 <div className="relative">
-                    <CreditCard className="absolute left-3 top-3.5 text-gray-400" size={18} />
-                    <input
-                        id="stripe-card-number"
-                        type="text"
-                        placeholder="1234 5678 9012 3456"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                        maxLength={19}
-                        className="w-full pl-10 border border-gray-300 rounded-lg px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-mono tracking-wider transition"
-                    />
+                    <CreditCard className="absolute left-3 top-[14px] text-gray-400 z-10" size={18} />
+                    <div className="w-full pl-10 border border-gray-300 rounded-lg px-4 py-3.5 bg-white focus-within:ring-2 focus-within:ring-indigo-500 transition">
+                        <CardNumberElement options={ELEMENT_OPTIONS} />
+                    </div>
                 </div>
             </div>
 
@@ -42,29 +45,17 @@ function StripePanel({ cardNumber, setCardNumber, cardExpiry, setCardExpiry, car
                     <label className="text-xs font-medium text-gray-600 block mb-1">
                         Vencimiento
                     </label>
-                    <input
-                        id="stripe-expiry"
-                        type="text"
-                        placeholder="MM / AA"
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
-                        maxLength={7}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-mono transition"
-                    />
+                    <div className="w-full border border-gray-300 rounded-lg px-4 py-4 bg-white focus-within:ring-2 focus-within:ring-indigo-500 transition">
+                        <CardExpiryElement options={ELEMENT_OPTIONS} />
+                    </div>
                 </div>
                 <div>
                     <label className="text-xs font-medium text-gray-600 block mb-1">
                         CVC
                     </label>
-                    <input
-                        id="stripe-cvc"
-                        type="text"
-                        placeholder="123"
-                        value={cardCvc}
-                        onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                        maxLength={4}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-mono transition"
-                    />
+                    <div className="w-full border border-gray-300 rounded-lg px-4 py-4 bg-white focus-within:ring-2 focus-within:ring-indigo-500 transition">
+                        <CardCvcElement options={ELEMENT_OPTIONS} />
+                    </div>
                 </div>
             </div>
 
@@ -121,9 +112,6 @@ function MPPanel() {
 export default function PaymentSelector({
     metodoPago,
     setMetodoPago,
-    cardNumber, setCardNumber,
-    cardExpiry, setCardExpiry,
-    cardCvc, setCardCvc,
     cardName, setCardName,
 }) {
     return (
@@ -179,12 +167,6 @@ export default function PaymentSelector({
 
             {metodoPago === "stripe" && (
                 <StripePanel
-                    cardNumber={cardNumber}
-                    setCardNumber={setCardNumber}
-                    cardExpiry={cardExpiry}
-                    setCardExpiry={setCardExpiry}
-                    cardCvc={cardCvc}
-                    setCardCvc={setCardCvc}
                     cardName={cardName}
                     setCardName={setCardName}
                 />

@@ -1,11 +1,12 @@
 import { CreditCard as CardIcon, CheckCircle, Lock, ChevronRight, Loader2 } from "lucide-react";
-import { useCheckout } from "./hooks/useCheckout.js";
+import { Elements } from "@stripe/react-stripe-js";
+import { useCheckout, stripePromise } from "./hooks/useCheckout.js";
 import ContactInfo from "./components/ContactInfo.jsx";
 import ShippingAddress from "./components/ShippingAddress.jsx";
 import PaymentSelector from "./components/PaymentSelector.jsx";
 import OrderSummary from "./components/OrderSummary.jsx";
 
-export default function CheckoutForm() {
+function CheckoutFormInner() {
     const {
         items,
         isMounted,
@@ -29,14 +30,10 @@ export default function CheckoutForm() {
         handleSelectAddress,
         loadingAddresses,
         // Tarjeta Stripe
-        cardNumber, setCardNumber,
-        cardExpiry, setCardExpiry,
-        cardCvc, setCardCvc,
         cardName, setCardName,
         // Estado del pago
         metodoPago, setMetodoPago,
         loadingOrder,
-        orderError,
         orderSuccess,
         orderSuccessId,
         // Handlers
@@ -122,19 +119,10 @@ export default function CheckoutForm() {
 
                 <PaymentSelector
                     metodoPago={metodoPago} setMetodoPago={setMetodoPago}
-                    cardNumber={cardNumber} setCardNumber={setCardNumber}
-                    cardExpiry={cardExpiry} setCardExpiry={setCardExpiry}
-                    cardCvc={cardCvc} setCardCvc={setCardCvc}
                     cardName={cardName} setCardName={setCardName}
                 />
 
-                {orderError && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm font-medium animate-fade-in">
-                         {orderError}
-                    </div>
-                )}
 
-               
                 <button
                     id="checkout-pay-button"
                     type="button"
@@ -175,5 +163,13 @@ export default function CheckoutForm() {
             />
 
         </div>
+    );
+}
+
+export default function CheckoutForm() {
+    return (
+        <Elements stripe={stripePromise}>
+            <CheckoutFormInner />
+        </Elements>
     );
 }

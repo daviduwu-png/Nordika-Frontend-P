@@ -1,33 +1,25 @@
 import { useState, useEffect } from "react";
+import { sileo } from "sileo";
 import { useStore } from "@nanostores/react";
 import { cartItems, removeCartItem } from "../../../store/cartStore";
 import { orderService } from "../../../services/orderService";
 import { paymentService } from "../../../services/paymentService";
 import { profileService } from "../../../services/profileService";
 import { loadStripe } from "@stripe/stripe-js";
+import { useStripe, useElements, CardNumberElement } from "@stripe/react-stripe-js";
 import { ENVIO_GRATIS_DESDE, COSTO_ENVIO } from "../components/OrderSummary.jsx";
 
 // Cargar Stripe una sola vez fuera del hook (evita re-creación en cada render)
-const stripePromise = loadStripe(
+export const stripePromise = loadStripe(
     import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
 export function useCheckout() {
+    const stripe = useStripe();
+    const elements = useElements();
     // ── Carrito ───────────────────────────────────────────────────────────────────
     const $cartItems = useStore(cartItems);
     const items = Object.values($cartItems);
-
-    // ── Hidratación SSR ───────────────────────────────────────────────────────────
-    const [isMounted, setIsMounted] = useState(false);
-    useEffect(() => { setIsMounted(true); }, []);
-
-    // ── Totales ───────────────────────────────────────────────────────────────────
-    const subtotal = items.reduce(
-        (acc, item) => acc + Number(item.price) * item.cantidad,
-        0
-    );
-    const envio = subtotal >= ENVIO_GRATIS_DESDE ? 0 : COSTO_ENVIO;
-    const total = subtotal + envio;
 
     // ── Formulario de contacto ────────────────────────────────────────────────────
     const [email, setEmail] = useState("");
@@ -36,6 +28,25 @@ export function useCheckout() {
     // ── Formulario de envío ───────────────────────────────────────────────────────
     const [nombre, setNombre] = useState("");
     const [apellidos, setApellidos] = useState("");
+
+    // ── Hidratación SSR y prellenado ──────────────────────────────────────────────
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        setIsMounted(true);
+
+        const userEmail = localStorage.getItem("user_email");
+        if (userEmail) {
+            setEmail(userEmail);
+        }
+    }, []); // Solo al montar — no re-ejecutar en cada cambio de email/nombre
+
+    // ── Totales ───────────────────────────────────────────────────────────────────
+    const subtotal = items.reduce(
+        (acc, item) => acc + Number(item.price) * item.cantidad,
+        0
+    );
+    const envio = subtotal >= ENVIO_GRATIS_DESDE ? 0 : COSTO_ENVIO;
+    const total = subtotal + envio;
     const [calle, setCalle] = useState("");
     const [colonia, setColonia] = useState("");
     const [cp, setCp] = useState("");
@@ -103,15 +114,11 @@ export function useCheckout() {
     };
 
     // ── Datos de tarjeta (Stripe) ─────────────────────────────────────────────────
-    const [cardNumber, setCardNumber] = useState("");
-    const [cardExpiry, setCardExpiry] = useState("");
-    const [cardCvc, setCardCvc] = useState("");
     const [cardName, setCardName] = useState("");
 
     // ── Estado del proceso de pago ────────────────────────────────────────────────
     const [metodoPago, setMetodoPago] = useState("stripe"); // "stripe" | "mercadopago"
     const [loadingOrder, setLoadingOrder] = useState(false);
-    const [orderError, setOrderError] = useState("");
     const [orderSuccess, setOrderSuccess] = useState(false);
     const [orderSuccessId, setOrderSuccessId] = useState(null);
 
@@ -159,7 +166,7 @@ export function useCheckout() {
 
     const validateForm = () => {
         if (!email || !nombre || !apellidos || !calle || !colonia || !cp || !ciudad) {
-            setOrderError("Por favor completa todos los campos de contacto y envío.");
+            sileo.error({ title: "Datos incompletos", description: "Por favor completa todos los campos de contacto y envío." });
             return false;
         }
         return true;
@@ -174,11 +181,10 @@ export function useCheckout() {
      *  4. Actualizar la orden con stripe_payment_id y status = paid
      */
     const handlePagarStripe = async () => {
-        setOrderError("");
         if (!validateForm()) return;
 
-        if (!cardNumber || !cardExpiry || !cardCvc || !cardName) {
-            setOrderError("Completa los datos de tu tarjeta.");
+        if (metodoPago === "stripe" && !cardName) {
+            sileo.error({ title: "Datos incompletos", description: "Completa el nombre de la tarjeta." });
             return;
         }
 
@@ -191,22 +197,17 @@ export function useCheckout() {
 
             const { client_secret } = await paymentService.createStripeIntent(total);
 
-            const stripe = await stripePromise;
-            if (!stripe || !client_secret) {
-                throw new Error("No se pudo inicializar Stripe. Verifica tu clave pública.");
+            if (!stripe || !elements || !client_secret) {
+                throw new Error("No se pudo inicializar Stripe. Verifica tu conexión o clave pública.");
             }
 
-            const [expMonth, expYear] = cardExpiry.split("/").map((s) => s.trim());
+            const cardElement = elements.getElement(CardNumberElement);
+
             const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
                 client_secret,
                 {
                     payment_method: {
-                        card: {
-                            number: cardNumber.replace(/\s/g, ""),
-                            exp_month: parseInt(expMonth),
-                            exp_year: parseInt(`20${expYear}`),
-                            cvc: cardCvc,
-                        },
+                        card: cardElement,
                         billing_details: { name: cardName, email },
                     },
                 }
@@ -224,12 +225,13 @@ export function useCheckout() {
             clearCart();
             setOrderSuccessId(createdOrder.id);
             setOrderSuccess(true);
-            setTimeout(() => { window.location.href = "/cuenta"; }, 3000);
+            setTimeout(() => { window.location.href = "/pago-exitoso"; }, 1500);
         } catch (error) {
             console.error(error);
-            setOrderError(
-                error.message || "Hubo un error al procesar tu pago. Inténtalo de nuevo."
-            );
+            sileo.error({ 
+                title: "Error al procesar el pago", 
+                description: error.message || "Inténtalo de nuevo." 
+            });
         } finally {
             setLoadingOrder(false);
         }
@@ -242,7 +244,6 @@ export function useCheckout() {
      *  3. Redirigir al checkout de MP (sandbox_init_point en TEST, init_point en PROD)
      */
     const handlePagarMP = async () => {
-        setOrderError("");
         if (!validateForm()) return;
 
         setLoadingOrder(true);
@@ -264,9 +265,10 @@ export function useCheckout() {
             window.location.href = redirectUrl;
         } catch (error) {
             console.error(error);
-            setOrderError(
-                error.message || "Hubo un error al iniciar el pago con Mercado Pago."
-            );
+            sileo.error({ 
+                title: "Error de Mercado Pago", 
+                description: error.message || "Hubo un error al iniciar el pago con Mercado Pago." 
+            });
         } finally {
             setLoadingOrder(false);
         }
@@ -298,14 +300,10 @@ export function useCheckout() {
         handleSelectAddress,
         loadingAddresses,
         // Tarjeta Stripe
-        cardNumber, setCardNumber,
-        cardExpiry, setCardExpiry,
-        cardCvc, setCardCvc,
         cardName, setCardName,
         // Estado del pago
         metodoPago, setMetodoPago,
         loadingOrder,
-        orderError,
         orderSuccess,
         orderSuccessId,
         // Handlers

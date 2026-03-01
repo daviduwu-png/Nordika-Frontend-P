@@ -40,11 +40,11 @@ export default function ShippingAddress({
                     >
                         {savedAddresses.map((addr) => (
                             <option key={addr.id} value={addr.id.toString()}>
-                                {addr.alias ? `📍 ${addr.alias} - ` : ""}
+                                {addr.alias ? ` ${addr.alias} - ` : ""}
                                 {addr.street} {addr.exterior_number}, {addr.city} {addr.postal_code}
                             </option>
                         ))}
-                        <option value="new">➕ Usar otra dirección distinta</option>
+                        <option value="new"> Usar otra dirección distinta</option>
                     </select>
                 </div>
             )}
@@ -57,7 +57,6 @@ export default function ShippingAddress({
                     placeholder="Nombre *"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    disabled={isAddressSelected}
                     className={inputClass}
                 />
                 <input
@@ -66,7 +65,6 @@ export default function ShippingAddress({
                     placeholder="Apellidos *"
                     value={apellidos}
                     onChange={(e) => setApellidos(e.target.value)}
-                    disabled={isAddressSelected}
                     className={inputClass}
                 />
                 <input
