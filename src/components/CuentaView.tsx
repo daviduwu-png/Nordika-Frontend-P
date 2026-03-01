@@ -4,6 +4,7 @@ import { profileService } from "../services/profileService";
 import { orderService } from "../services/orderService";
 import { logout } from "../store/userStore";
 import AddressModal from "./AddressModal";
+import OrderDetailModal from "./OrderDetailModal";
 import { sileo } from "sileo";
 import "sileo/styles.css";
 
@@ -14,9 +15,13 @@ export default function CuentaView() {
     const [activeTab, setActiveTab] = useState<'pedidos' | 'direcciones'>('pedidos');
     const [loading, setLoading] = useState(true);
 
-    // Modal state
+    // Modal state - Direcciones
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState<any>(null);
+
+    // Modal state - Detalles de orden
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchDatos = async () => {
@@ -129,6 +134,12 @@ export default function CuentaView() {
                 initialData={selectedAddress}
             />
 
+            <OrderDetailModal
+                order={selectedOrder}
+                isOpen={isOrderModalOpen}
+                onClose={() => { setIsOrderModalOpen(false); setSelectedOrder(null); }}
+            />
+
             <aside className="w-full md:w-64 flex-shrink-0">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100 bg-gray-50">
@@ -201,12 +212,12 @@ export default function CuentaView() {
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-bold text-gray-900">${parseFloat(order.total_amount || '0').toFixed(2)} MXN</p>
-                                                <a
-                                                    href="#"
+                                                <button
+                                                    onClick={() => { setSelectedOrder(order); setIsOrderModalOpen(true); }}
                                                     className="text-indigo-600 text-sm font-medium hover:underline flex items-center gap-1 justify-end"
                                                 >
                                                     Ver detalles
-                                                </a>
+                                                </button>
                                             </div>
                                         </div>
                                     ))
