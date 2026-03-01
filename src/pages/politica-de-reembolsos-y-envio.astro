@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Package, RefreshCcw } from "lucide-react";
+---
+
+<Layout title="Envíos y Devoluciones | Nordika Wear">
+  <div class="bg-gray-50 min-h-screen py-20">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="bg-white rounded-2xl p-10 md:p-16 shadow-sm border border-gray-100">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-6">Política de Envíos y Reembolsos</h1>
+        <p class="text-gray-500 mb-10">Conoce cómo entregamos tu estilo a tu puerta y nuestras garantías de satisfacción.</p>
+
+        <div class="prose prose-indigo max-w-none text-gray-600 leading-relaxed space-y-8">
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Package className="text-indigo-600" /> Políticas de Envío
+            </h2>
+            <ul class="list-disc pl-6 space-y-2 mt-4">
+              <li><strong>Tiempos de procesamiento:</strong> Todos los pedidos son preparados y despachados en un lapso de 1 a 3 días hábiles desde la confirmación del pago.</li>
+              <li><strong>Tiempos de entrega:</strong> Para envíos nacionales, el tiempo estimado de entrega de la paquetería es de 3 a 7 días hábiles de acuerdo a la logística local.</li>
+              <li><strong>Envío Gratuito:</strong> Ofrecemos envío completamente gratuito en órdenes superiores a $999.00 MXN. Para órdenes menores, el costo de envío es de $150.00 MXN aplicados directamente en el carrito de compras.</li>
+              <li><strong>Rastreo:</strong> Una vez validado tu pedido, te mandaremos un correo de confirmación con un número de guía para que puedas seguir el paquete en todo momento.</li>
+            </ul>
+          </section>
+
+          <hr class="border-gray-100 my-8" />
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <RefreshCcw className="text-indigo-600" /> Políticas de Devoluciones y Garantía
+            </h2>
+            <p>Tu satisfacción es nuestra prioridad. Si no estás 100% satisfecho con tu prenda, puedes solicitar una devolución o cambio siguiendo estas condiciones:</p>
+            <ul class="list-disc pl-6 space-y-2 mt-4">
+              <li><strong>Período de devoluciones:</strong> Tienes hasta 30 días naturales a partir de la recepción del paquete para solicitar cualquier cambio por defecto de fábrica, talla incorrecta, o si el producto no cumplió tus expectativas.</li>
+              <li><strong>Condición del artículo:</strong> Para que el reembolso aplique, la ropa debe estar sin uso, sin lavar, sin olores y aún debe conservar las etiquetas originales o el empaque intacto en el que venía.</li>
+              <li><strong>Proceso:</strong> Mándanos un correo a <strong>nordikawsoporte@gmail.com</strong> detallando tu número de orden y evidencia (si aplica). Te mandaremos una guía de retorno gratuita.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Reembolsos</h2>
+            <p>
+              Al recibir tu paquete de retorno y aprobar el estado impecable de la prenda, procesaremos tu reembolso a la tarjeta o cuenta bancaria original en un lapso de 5 a 10 días hábiles (el tiempo depende fuertemente de tu banco).
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

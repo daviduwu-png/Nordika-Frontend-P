@@ -1,0 +1,60 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { HelpCircle, CreditCard, Truck, RefreshCcw, Package } from "lucide-react";
+---
+
+<Layout title="Preguntas Frecuentes | Nordika Wear">
+  <div class="bg-gray-50 min-h-screen py-20">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4 flex justify-center items-center gap-3">
+          <HelpCircle size={40} className="text-indigo-600" /> Preguntas Frecuentes
+        </h1>
+        <p class="text-gray-500">Todo lo que necesitas saber sobre compras, envíos y nuestra ropa.</p>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Pregunta 1 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <CreditCard size={20} className="text-indigo-500" /> ¿Qué métodos de pago aceptan?
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Aceptamos tarjetas de crédito y débito (Visa, Mastercard, American Express) a través de Stripe. También puedes usar Mercado Pago para pagar con transferencia SPEI, efectivo en OXXO, y saldo en tu cuenta MP. Todo nuestro proceso está 100% encriptado.
+          </p>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <Package size={20} className="text-indigo-500" /> ¿Puedo modificar un pedido una vez hecho?
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Procesamos los pedidos sumamente rápido para asegurar entregas ágiles. Si necesitas hacer un cambio (de talla o dirección) ponte en contacto con <strong>nordikawsoporte@gmail.com</strong> durante las primeras 2 horas posteriores a tu pago. No garantizamos cambios pasados ese rango.
+          </p>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <Truck size={20} className="text-indigo-500" /> ¿Hacen envíos internacionales?
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Por el momento, solo operamos y realizamos envíos dentro de la República Mexicana. Esperamos expandir nuestras fronteras en el futuro cercano, ¡mantente atento a nuestras redes sociales!
+          </p>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <RefreshCcw size={20} className="text-indigo-500" /> ¿Qué hago si mi prenda llega defectuosa?
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Revisamos la calidad meticulosamente antes de enviar, pero si algo escapa de nuestras manos, te respaldamos. Tienes 30 días para reportarlo con fotos a nuestro equipo de soporte y te mandaremos un reemplazo o reembolso total sin costo para ti.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</Layout>
