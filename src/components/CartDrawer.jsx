@@ -56,8 +56,10 @@ export default function CartDrawer() {
                     <div>
                       <h3 className="font-bold text-gray-900 line-clamp-1">{item.name}</h3>
 
-                      <p className="text-sm text-gray-500 capitalize">Talla: {item.selectedVariant.size}</p>
-                      <p className="text-sm text-gray-500 capitalize">Categoria: {item.category}</p>
+                      <p className="text-sm text-gray-500 capitalize">
+                        Talla: {item.selectedVariant ? item.selectedVariant.size : "Única"}
+                      </p>
+                      <p className="text-sm text-gray-500 capitalize">Categoría: {item.category}</p>
                     </div>
 
                     <div className="flex justify-between items-center">

@@ -134,7 +134,7 @@ export function useCheckout() {
             product: item.id,
             variant: item.selectedVariant?.id || null,
             quantity: item.cantidad,
-            customization_fee: 0,
+            is_customized: !!item.customization,
         }));
 
 
@@ -204,7 +204,9 @@ export function useCheckout() {
                 clearCart();
                 setOrderSuccessId(createdOrder.id);
                 setOrderSuccess(true);
-                setTimeout(() => { window.location.href = "/pago-exitoso"; }, 1500);
+                setTimeout(() => {
+                    window.location.href = `/pago-exitoso?order=${createdOrder.id}`;
+                }, 1500);
             } else {
                 throw new Error("El pago no fue confirmado por Stripe. Inténtalo de nuevo.");
             }

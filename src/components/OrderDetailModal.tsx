@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     X,
     Package,
@@ -10,6 +10,9 @@ import {
     ShoppingBag,
     Calendar,
     Hash,
+    Copy,
+    Check,
+    ExternalLink,
 } from "lucide-react";
 
 interface OrderItem {
@@ -46,6 +49,8 @@ interface Order {
     };
     payment_method?: string;
     notes?: string;
+    tracking_number?: string;
+    tracking_url?: string;
 }
 
 interface OrderDetailModalProps {
@@ -83,6 +88,14 @@ function formatPrice(val: string | number | undefined): string {
 
 export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetailModalProps) {
     const backdropRef = useRef<HTMLDivElement>(null);
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyTracking = (trackingNumber: string) => {
+        navigator.clipboard.writeText(trackingNumber).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
 
     // Cerrar al presionar Escape
     useEffect(() => {
@@ -258,6 +271,41 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
                                     <p className="text-gray-500 flex items-center gap-1 mt-1">
                                         📞 {addr.phone}
                                     </p>
+                                )}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* ── Tracking de envío ── */}
+                    {order.tracking_number && (
+                        <section>
+                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                                <Truck size={15} /> Rastreo del Envío
+                            </h3>
+                            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm space-y-3">
+                                <div className="flex items-center justify-between gap-2">
+                                    <div>
+                                        <p className="text-xs text-blue-500 font-medium uppercase tracking-wide mb-1">Número de rastreo</p>
+                                        <p className="font-bold text-blue-900 font-mono text-base">{order.tracking_number}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleCopyTracking(order.tracking_number!)}
+                                        className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-white border border-blue-200 px-3 py-2 rounded-lg transition-colors hover:bg-blue-50 flex-shrink-0"
+                                    >
+                                        {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                                        {copied ? "¡Copiado!" : "Copiar"}
+                                    </button>
+                                </div>
+                                {order.tracking_url && (
+                                    <a
+                                        href={order.tracking_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-lg transition-colors w-full justify-center"
+                                    >
+                                        <ExternalLink size={13} />
+                                        Rastrear mi paquete
+                                    </a>
                                 )}
                             </div>
                         </section>

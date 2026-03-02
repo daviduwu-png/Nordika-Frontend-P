@@ -34,5 +34,18 @@
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.7.2"
-  }
+  },
+  "description": "![Project Status](https://img.shields.io/badge/status-development-orange) ![Astro](https://img.shields.io/badge/Astro-v5.0-ff5d01) ![React](https://img.shields.io/badge/React-18-blue) ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8)",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daviduwu-png/Nordika-Frontend-P.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daviduwu-png/Nordika-Frontend-P/issues"
+  },
+  "homepage": "https://github.com/daviduwu-png/Nordika-Frontend-P#readme"
 }
