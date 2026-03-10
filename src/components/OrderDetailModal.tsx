@@ -1,19 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-    X,
-    Package,
-    MapPin,
-    CreditCard,
-    Truck,
-    CheckCircle,
-    Clock,
-    ShoppingBag,
-    Calendar,
-    Hash,
-    Copy,
-    Check,
-    ExternalLink,
-} from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { X, CheckCircle, CreditCard, Truck, Clock, ShoppingBag, Calendar } from "lucide-react";
+import OrderItemsList from "./OrderDetail/OrderItemsList";
+import ShippingAddressSection from "./OrderDetail/ShippingAddressSection";
+import TrackingSection from "./OrderDetail/TrackingSection";
+import PaymentInfoSection from "./OrderDetail/PaymentInfoSection";
+import OrderSummarySection from "./OrderDetail/OrderSummarySection";
 
 interface OrderItem {
     id: number;
@@ -26,6 +17,16 @@ interface OrderItem {
     image?: string;
 }
 
+interface ParsedAddress {
+    full_name?: string;
+    street?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+    postal_code?: string;
+    phone?: string;
+}
+
 interface Order {
     id: number;
     status: string;
@@ -35,19 +36,11 @@ interface Order {
     subtotal?: string | number;
     shipping_cost?: string | number;
     items?: OrderItem[];
-    shipping_address?: {
-        alias?: string;
-        street?: string;
-        exterior_number?: string;
-        interior_number?: string;
-        neighborhood?: string;
-        city?: string;
-        state?: string;
-        postal_code?: string;
-        country?: string;
-        phone?: string;
-    };
+    shipping_address?: string; 
+    shipping_address_parsed?: ParsedAddress; 
     payment_method?: string;
+    card_brand?: string;
+    card_last4?: string;
     notes?: string;
     tracking_number?: string;
     tracking_url?: string;
@@ -81,21 +74,8 @@ function getStatusConfig(status: string) {
     );
 }
 
-function formatPrice(val: string | number | undefined): string {
-    if (val === undefined || val === null) return "0.00";
-    return parseFloat(String(val)).toFixed(2);
-}
-
 export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetailModalProps) {
     const backdropRef = useRef<HTMLDivElement>(null);
-    const [copied, setCopied] = useState(false);
-
-    const handleCopyTracking = (trackingNumber: string) => {
-        navigator.clipboard.writeText(trackingNumber).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        });
-    };
 
     // Cerrar al presionar Escape
     useEffect(() => {
@@ -120,18 +100,6 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
 
     const statusCfg = getStatusConfig(order.status);
     const items = order.items ?? [];
-    const addr = order.shipping_address;
-
-    const subtotal = order.subtotal
-        ? formatPrice(order.subtotal)
-        : formatPrice(
-            items.reduce(
-                (acc, item) => acc + parseFloat(formatPrice(item.subtotal ?? (parseFloat(String(item.unit_price ?? item.price ?? 0)) * item.quantity))),
-                0
-            )
-        );
-
-    const shippingCost = order.shipping_cost !== undefined ? formatPrice(order.shipping_cost) : null;
 
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === backdropRef.current) onClose();
@@ -192,174 +160,33 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
 
                 {/* ── Scrollable body ── */}
                 <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
+                    <OrderItemsList items={items} />
 
-                    {/* ── Artículos ── */}
-                    <section>
-                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <Package size={15} /> Artículos ({items.length})
-                        </h3>
+                    <ShippingAddressSection 
+                        parsed={order.shipping_address_parsed} 
+                        raw={order.shipping_address} 
+                    />
 
-                        {items.length === 0 ? (
-                            <p className="text-sm text-gray-400 italic">No hay artículos registrados en este pedido.</p>
-                        ) : (
-                            <div className="space-y-3">
-                                {items.map((item, idx) => {
-                                    const name = item.product_name ?? item.product?.name ?? `Artículo #${idx + 1}`;
-                                    const unitPrice = parseFloat(String(item.unit_price ?? item.price ?? 0));
-                                    const itemSubtotal = parseFloat(
-                                        formatPrice(item.subtotal ?? unitPrice * item.quantity)
-                                    );
-                                    const img = item.image ?? item.product?.image;
-
-                                    return (
-                                        <div
-                                            key={item.id ?? idx}
-                                            className="flex items-center gap-4 bg-gray-50 rounded-xl p-3"
-                                        >
-                                            {img ? (
-                                                <img
-                                                    src={img}
-                                                    alt={name}
-                                                    className="w-14 h-14 object-cover rounded-lg flex-shrink-0 border border-gray-200"
-                                                />
-                                            ) : (
-                                                <div className="w-14 h-14 bg-indigo-50 rounded-lg flex-shrink-0 flex items-center justify-center border border-gray-200">
-                                                    <Package size={24} className="text-indigo-300" />
-                                                </div>
-                                            )}
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-gray-800 text-sm truncate">{name}</p>
-                                                <p className="text-xs text-gray-500 mt-0.5">
-                                                    {item.quantity} × ${unitPrice.toFixed(2)} MXN
-                                                </p>
-                                            </div>
-                                            <p className="font-bold text-gray-900 text-sm flex-shrink-0">
-                                                ${itemSubtotal.toFixed(2)}
-                                            </p>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </section>
-
-                    {/* ── Dirección de envío ── */}
-                    {addr && (
-                        <section>
-                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                                <MapPin size={15} /> Dirección de Envío
-                            </h3>
-                            <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 space-y-1">
-                                {addr.alias && (
-                                    <p className="font-bold text-gray-800">{addr.alias}</p>
-                                )}
-                                {addr.street && (
-                                    <p>
-                                        {addr.street} #{addr.exterior_number}
-                                        {addr.interior_number ? ` Int. ${addr.interior_number}` : ""}
-                                    </p>
-                                )}
-                                {addr.neighborhood && <p>Col. {addr.neighborhood}</p>}
-                                {(addr.city || addr.state) && (
-                                    <p>
-                                        {addr.city}{addr.city && addr.state ? ", " : ""}
-                                        {addr.state} {addr.postal_code}
-                                    </p>
-                                )}
-                                {addr.country && <p>{addr.country}</p>}
-                                {addr.phone && (
-                                    <p className="text-gray-500 flex items-center gap-1 mt-1">
-                                        📞 {addr.phone}
-                                    </p>
-                                )}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* ── Tracking de envío ── */}
                     {order.tracking_number && (
-                        <section>
-                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                                <Truck size={15} /> Rastreo del Envío
-                            </h3>
-                            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm space-y-3">
-                                <div className="flex items-center justify-between gap-2">
-                                    <div>
-                                        <p className="text-xs text-blue-500 font-medium uppercase tracking-wide mb-1">Número de rastreo</p>
-                                        <p className="font-bold text-blue-900 font-mono text-base">{order.tracking_number}</p>
-                                    </div>
-                                    <button
-                                        onClick={() => handleCopyTracking(order.tracking_number!)}
-                                        className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-white border border-blue-200 px-3 py-2 rounded-lg transition-colors hover:bg-blue-50 flex-shrink-0"
-                                    >
-                                        {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
-                                        {copied ? "¡Copiado!" : "Copiar"}
-                                    </button>
-                                </div>
-                                {order.tracking_url && (
-                                    <a
-                                        href={order.tracking_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-lg transition-colors w-full justify-center"
-                                    >
-                                        <ExternalLink size={13} />
-                                        Rastrear mi paquete
-                                    </a>
-                                )}
-                            </div>
-                        </section>
+                        <TrackingSection 
+                            trackingNumber={order.tracking_number} 
+                            trackingUrl={order.tracking_url} 
+                        />
                     )}
 
-                    {/* ── Pago / Notas ── */}
-                    {(order.payment_method || order.notes) && (
-                        <section>
-                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                                <CreditCard size={15} /> Pago
-                            </h3>
-                            <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 space-y-2">
-                                {order.payment_method && (
-                                    <div className="flex items-center gap-2">
-                                        <Hash size={13} className="text-gray-400" />
-                                        <span className="text-gray-500">Método:</span>
-                                        <span className="font-medium capitalize">{order.payment_method}</span>
-                                    </div>
-                                )}
-                                {order.notes && (
-                                    <p className="text-gray-500 italic text-xs mt-1">
-                                        Nota: {order.notes}
-                                    </p>
-                                )}
-                            </div>
-                        </section>
-                    )}
+                    <PaymentInfoSection 
+                        paymentMethod={order.payment_method}
+                        cardBrand={order.card_brand}
+                        cardLast4={order.card_last4}
+                        notes={order.notes}
+                    />
 
-                    {/* ── Resumen de costos ── */}
-                    <section>
-                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3">
-                            Resumen
-                        </h3>
-                        <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
-                            <div className="flex justify-between text-gray-600">
-                                <span>Subtotal</span>
-                                <span>${subtotal} MXN</span>
-                            </div>
-                            {shippingCost !== null && (
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Envío</span>
-                                    <span>
-                                        {parseFloat(shippingCost) === 0
-                                            ? <span className="text-emerald-600 font-medium">Gratis</span>
-                                            : `$${shippingCost} MXN`}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between font-bold text-gray-900 text-base">
-                                <span>Total</span>
-                                <span>${formatPrice(order.total_amount)} MXN</span>
-                            </div>
-                        </div>
-                    </section>
+                    <OrderSummarySection 
+                        items={items}
+                        subtotal={order.subtotal}
+                        shippingCost={order.shipping_cost}
+                        totalAmount={order.total_amount}
+                    />
                 </div>
 
                 {/* ── Footer ── */}
