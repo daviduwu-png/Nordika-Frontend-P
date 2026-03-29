@@ -195,8 +195,15 @@ export function useCheckout() {
       if (stripeError) throw new Error(stripeError.message);
 
       if (paymentIntent?.status === "succeeded") {
-        // El webhook de Stripe actualiza el status en la BD automáticamente.
-        // No necesitamos llamar updateOrder aquí (evita condiciones de carrera).
+        // En desarrollo local (o como respaldo si falla el webhook),
+        // avisamos explícitamente al backend para que sincronice la BD y corra Skydropx localmente.
+        try {
+          await paymentService.verifyStripePayment(createdOrder.id);
+        } catch (verifyErr) {
+          console.error("Error validando el pago manualmente con el backend:", verifyErr);
+        }
+
+        // Ya validado, limpiar carrito y mostrar éxito.
         clearCart();
         setOrderSuccessId(createdOrder.id);
         setOrderSuccess(true);

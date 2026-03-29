@@ -1,64 +1,103 @@
 import React, { useState } from "react";
-import { Truck, Copy, Check, ExternalLink } from "lucide-react";
+import { Truck, Copy, Check, ExternalLink, Package, Navigation, MapPin } from "lucide-react";
 
 interface TrackingSectionProps {
-    trackingNumber: string;
-    trackingUrl?: string;
+  trackingNumber: string;
+  trackingUrl?: string;
+  shippingStatus?: string;
 }
 
-export default function TrackingSection({ trackingNumber, trackingUrl }: TrackingSectionProps) {
-    const [copied, setCopied] = useState(false);
+const SHIPPING_LABELS: Record<string, { text: string; bg: string; textCol: string; icon: any }> = {
+  pending: {
+    text: "Preparando envío",
+    bg: "bg-gray-50 border border-gray-200",
+    textCol: "text-gray-700",
+    icon: Package,
+  },
+  label_created: {
+    text: "Guía generada",
+    bg: "bg-gray-50 border border-gray-200",
+    textCol: "text-gray-700",
+    icon: Package,
+  },
+  in_transit: {
+    text: "En tránsito",
+    bg: "bg-amber-50 border border-amber-200",
+    textCol: "text-amber-700",
+    icon: Navigation,
+  },
+  delivered: {
+    text: "Entregado",
+    bg: "bg-emerald-50 border border-emerald-200",
+    textCol: "text-emerald-700",
+    icon: MapPin,
+  },
+};
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(trackingNumber).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        });
-    };
+export default function TrackingSection({ trackingNumber, trackingUrl, shippingStatus }: TrackingSectionProps) {
+  const [copied, setCopied] = useState(false);
 
-    return (
-        <section>
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                <Truck size={15} /> Rastreo del Envío
-            </h3>
+  const handleCopy = () => {
+    navigator.clipboard.writeText(trackingNumber).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                    <div>
-                        <p className="text-xs text-blue-500 font-medium uppercase tracking-wide mb-1">
-                            Número de rastreo
-                        </p>
-                        <p className="font-bold text-blue-900 font-mono text-base">{trackingNumber}</p>
-                    </div>
-                    <button
-                        onClick={handleCopy}
-                        className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-white border border-blue-200 px-3 py-2 rounded-lg transition-colors hover:bg-blue-50 flex-shrink-0"
-                    >
-                        {copied ? (
-                            <Check size={13} className="text-green-500" />
-                        ) : (
-                            <Copy size={13} />
-                        )}
-                        {copied ? "¡Copiado!" : "Copiar"}
-                    </button>
-                </div>
+  const statusConfig = shippingStatus ? SHIPPING_LABELS[shippingStatus] : null;
+  const StatusIcon = statusConfig?.icon;
 
-                {trackingUrl ? (
-                    <a
-                        href={trackingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-lg transition-colors w-full justify-center"
-                    >
-                        <ExternalLink size={13} />
-                        Rastrear mi paquete
-                    </a>
-                ) : (
-                    <p className="text-xs text-blue-500 italic">
-                        Usa el número de rastreo en el sitio de la paquetería para seguir tu envío.
-                    </p>
-                )}
-            </div>
-        </section>
-    );
+  let finalTrackingUrl = trackingUrl;
+  if (finalTrackingUrl && finalTrackingUrl.toLowerCase().includes(".pdf")) {
+    finalTrackingUrl = `https://rastreo.skydropx.com/trackings/${trackingNumber}`;
+  }
+
+  return (
+    <section>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide flex items-center gap-2">
+          <Truck size={15} /> Rastreo del Envío
+        </h3>
+        {statusConfig && (
+          <span
+            className={`text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.textCol}`}
+          >
+            <StatusIcon size={12} /> {statusConfig.text}
+          </span>
+        )}
+      </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Número de rastreo</p>
+            <p className="font-bold text-gray-900 font-mono text-base break-all">{trackingNumber}</p>
+          </div>
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white border border-gray-200 px-3 py-2 rounded-lg transition-colors hover:bg-gray-100 flex-shrink-0"
+          >
+            {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+            {copied ? "¡Copiado!" : "Copiar"}
+          </button>
+        </div>
+
+        {finalTrackingUrl ? (
+          <a
+            href={finalTrackingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 text-xs font-semibold text-white bg-gray-900 hover:bg-black px-4 py-2.5 rounded-lg transition-colors w-full"
+          >
+            <ExternalLink size={13} />
+            Rastrear mi paquete
+          </a>
+        ) : (
+          <p className="text-xs text-gray-500 italic">
+            El enlace de rastreo estará disponible pronto o usa el número directamente con la paquetería.
+          </p>
+        )}
+      </div>
+    </section>
+  );
 }
