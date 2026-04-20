@@ -46,7 +46,6 @@ export default function GoogleAuth() {
                 <GoogleLogin
                     onSuccess={handleSuccess}
                     onError={handleError}
-                    useOneTap
                     theme="filled_black"
                     shape="pill"
                 />
