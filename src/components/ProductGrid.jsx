@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Frown, ShoppingCart } from "lucide-react";
 import { addCartItem } from "../store/cartStore";
+import { productService } from "../services/productService";
 
-export default function ProductGrid({ productos }) {
+export default function ProductGrid() {
+  const [productos, setProductos] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [categoriaActiva, setCategoriaActiva] = useState("todos");
 
-  if (productos.length > 0) {
-    console.log("Primer producto recibido:", productos[0]);
-  } else {
-    console.log("No llegaron productos o la lista está vacía");
-  }
+  useEffect(() => {
+    productService.getAllProducts().then((data) => {
+      setProductos(data);
+      setCargando(false);
+    });
+  }, []);
 
   const productosFiltrados = productos.filter((producto) => {
     const productName = producto.name || "";
@@ -23,6 +27,17 @@ export default function ProductGrid({ productos }) {
   });
 
   const categorias = ["todos", ...new Set(productos.map((p) => p.category || "sin-categoria"))];
+
+  if (cargando) {
+    return (
+      <div className="flex justify-center items-center py-32">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+          <p className="text-gray-500 font-medium">Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

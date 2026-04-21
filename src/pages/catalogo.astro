@@ -1,11 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
 import ProductGrid from "../components/ProductGrid.jsx";
-
-import { productService } from "../services/productService";
-
-const productos = await productService.getAllProducts();
 ---
 
 <Layout title="Catálogo | Nordika Wear">
@@ -18,7 +13,7 @@ const productos = await productService.getAllProducts();
     </header>
 
     <section class="container mx-auto px-4">
-      <ProductGrid client:load productos={productos} />
+      <ProductGrid client:load />
     </section>
   </div>
 </Layout>
