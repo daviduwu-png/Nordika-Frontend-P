@@ -3,6 +3,18 @@ import { addCartItem } from "../store/cartStore";
 import { ShoppingBag, Truck, ShieldCheck, Ruler } from "lucide-react";
 import { sileo } from "sileo";
 
+const CATEGORY_MOCKUPS = {
+  playeras: "/mockups/playera.png",
+  sudaderas: "/mockups/sudadera.png",
+  gorras: "/mockups/gorra.png",
+  tazas: "/mockups/taza.png",
+};
+
+function getProductImage(product) {
+  if (product.image) return product.image;
+  return CATEGORY_MOCKUPS[product.category] || "/mockups/playera.png";
+}
+
 export default function ProductDetail({ product }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
 
@@ -25,7 +37,7 @@ export default function ProductDetail({ product }) {
       <div className="flex-1">
         <div className="bg-gray-100 rounded-2xl overflow-hidden aspect-square sticky top-24">
           <img
-            src={product.image}
+            src={getProductImage(product)}
             alt={product.name}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
           />
@@ -66,10 +78,11 @@ export default function ProductDetail({ product }) {
                     disabled={isOutOfStock}
                     className={`
                                     min-w-[3.5rem] h-14 rounded-xl border-2 font-bold text-sm transition-all
-                                    ${isSelected
-                        ? "border-black bg-black text-white shadow-lg scale-105"
-                        : "border-gray-200 bg-white text-gray-900 hover:border-black"
-                      }
+                                    ${
+                                      isSelected
+                                        ? "border-black bg-black text-white shadow-lg scale-105"
+                                        : "border-gray-200 bg-white text-gray-900 hover:border-black"
+                                    }
                                     ${isOutOfStock ? "opacity-50 cursor-not-allowed decoration-slice line-through bg-gray-50" : ""}
                                 `}
                   >

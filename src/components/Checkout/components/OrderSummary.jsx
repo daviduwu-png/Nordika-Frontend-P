@@ -16,7 +16,7 @@ export default function OrderSummary({ items, subtotal, envio, total }) {
                     <div key={item.cartItemId} className="flex gap-3">
                         <div className="relative w-16 h-16 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0">
                             <img
-                                src={item.image}
+                                src={item.image || { playeras: "/mockups/playera.png", sudaderas: "/mockups/sudadera.png", gorras: "/mockups/gorra.png", tazas: "/mockups/taza.png" }[item.category] || "/mockups/playera.png"}
                                 alt={item.name}
                                 className="w-full h-full object-cover"
                             />
