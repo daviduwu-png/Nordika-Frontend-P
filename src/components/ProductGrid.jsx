@@ -82,8 +82,13 @@ export default function ProductGrid() {
               className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer"
             >
               <div className="aspect-square overflow-hidden bg-gray-100 relative">
-                <img
-                  src={producto.image || "https://via.placeholder.com/300?text=No+Image"}
+              <img
+                  src={producto.image || {
+                    playeras: "/mockups/playera.png",
+                    sudaderas: "/mockups/sudadera.png",
+                    gorras: "/mockups/gorra.png",
+                    tazas: "/mockups/taza.png",
+                  }[producto.category] || "/mockups/playera.png"}
                   alt={producto.name || "Producto"}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
