@@ -10,6 +10,15 @@ interface Props {
 }
 
 const { name, price, image, category, slug } = Astro.props;
+
+const MOCKUPS: Record<string, string> = {
+  playeras: "/mockups/playera.png",
+  sudaderas: "/mockups/sudadera.png",
+  gorras: "/mockups/gorra.png",
+  tazas: "/mockups/taza.png",
+};
+
+const displayImage = image || MOCKUPS[category] || "/mockups/playera.png";
 ---
 
 <a
@@ -18,7 +27,7 @@ const { name, price, image, category, slug } = Astro.props;
 >
   <div class="aspect-square overflow-hidden bg-gray-100 relative">
     <img
-      src={image}
+      src={displayImage}
       alt={name}
       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
     />
