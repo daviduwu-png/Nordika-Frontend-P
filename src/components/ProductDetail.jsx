@@ -8,6 +8,7 @@ const CATEGORY_MOCKUPS = {
   sudaderas: "/mockups/sudadera.png",
   gorras: "/mockups/gorra.png",
   tazas: "/mockups/taza.png",
+  shorts_box: "/mockups/shorts-box.png",
 };
 
 function getProductImage(product) {

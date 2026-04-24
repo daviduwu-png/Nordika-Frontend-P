@@ -49,7 +49,21 @@ export default function CartDrawer() {
               itemsArray.map((item) => (
                 <div key={item.cartItemId} className="flex gap-4 animate-fade-in">
                   <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
-                    <img src={item.image || { playeras: "/mockups/playera.png", sudaderas: "/mockups/sudadera.png", gorras: "/mockups/gorra.png", tazas: "/mockups/taza.png" }[item.category] || "/mockups/playera.png"} alt={item.name} className="w-full h-full object-cover" />
+                    <img
+                      src={
+                        item.image ||
+                        {
+                          playeras: "/mockups/playera.png",
+                          sudaderas: "/mockups/sudadera.png",
+                          gorras: "/mockups/gorra.png",
+                          tazas: "/mockups/taza.png",
+                          shorts_box: "/mockups/shorts-box.png",
+                        }[item.category] ||
+                        "/mockups/playera.png"
+                      }
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
                   <div className="flex-1 flex flex-col justify-between">
