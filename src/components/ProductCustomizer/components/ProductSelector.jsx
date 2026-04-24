@@ -4,7 +4,7 @@ export default function ProductSelector({ productos, productoActual, onSelect })
   if (productos.length <= 1) return null;
 
   return (
-    <div className="lg:absolute lg:top-12 lg:left-6 z-40 flex flex-row lg:flex-col gap-3 sm:gap-4 overflow-x-auto lg:overflow-y-auto lg:max-h-[520px] w-full lg:w-auto pb-4 lg:pb-2 pt-1 lg:pt-2 mb-4 lg:mb-0 max-w-full hide-scrollbar">
+    <div className="z-40 flex flex-row lg:flex-col gap-3 sm:gap-4 overflow-x-auto lg:overflow-y-auto lg:max-h-[520px] w-full lg:w-auto pb-4 lg:pb-2 pt-1 lg:pt-2 mb-4 lg:mb-0 max-w-full hide-scrollbar shrink-0">
       {productos.map((prod) => {
         const { img, icon } = getMockupForCategory(prod.category);
         const isSelected = productoActual?.id === prod.id;

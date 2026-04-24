@@ -74,26 +74,24 @@ export default function ProductCustomizer() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 min-h-[600px] p-4">
-      <div
-        className={`flex-1 bg-gray-50 rounded-3xl border border-gray-200 p-4 lg:p-10 flex flex-col items-center justify-center relative shadow-sm overflow-hidden ${
-          showSelector ? "lg:pl-28" : ""
-        }`}
-      >
+      <div className="flex-1 bg-gray-50 rounded-3xl border border-gray-200 p-4 lg:p-10 flex flex-col lg:flex-row items-center relative shadow-sm overflow-hidden gap-4 lg:gap-8">
         <ProductSelector
           productos={productosDisponibles}
           productoActual={productoActual}
           onSelect={seleccionarProducto}
         />
 
-        <MockupCanvas
-          mockupImg={mockupUI.img}
-          color={color}
-          logo={logo}
-          scale={scale}
-          draggableRef={draggableRef}
-          fileInputRef={fileInputRef}
-          onRemoveLogo={() => setLogo(null)}
-        />
+        <div className="flex-1 w-full flex items-center justify-center">
+          <MockupCanvas
+            mockupImg={mockupUI.img}
+            color={color}
+            logo={logo}
+            scale={scale}
+            draggableRef={draggableRef}
+            fileInputRef={fileInputRef}
+            onRemoveLogo={() => setLogo(null)}
+          />
+        </div>
       </div>
 
       {/* ── Panel de controles derecho ── */}
