@@ -25,13 +25,14 @@ export default function CustomizerPanel({
   const puedeAgregar = !adding && !!productoActual && !!logo && !(tieneVariantes && !tallaId);
 
   return (
-    <div className="w-full lg:w-80 h-fit bg-white p-6 rounded-3xl shadow-xl border border-gray-100 sticky top-4">
+    <div className="w-full lg:w-90 h-fit bg-white p-6 rounded-3xl shadow-xl border border-gray-100 sticky top-4">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-extrabold text-gray-900">Personalizar</h2>
-        <span className="text-indigo-600 font-bold bg-indigo-50 px-3 py-1 rounded-lg text-sm text-center">
-          ${productoActual?.price} <br />
-          <span className="text-xs">+ $150 (Personalización)</span>
-        </span>
+        <div className="rounded-xl border border-indigo-200/70 bg-white/90 px-3 py-2 text-right min-w-[10.5rem] shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">Precio base</p>
+          <p className="text-2xl font-extrabold text-indigo-700 leading-none mt-1">${productoActual?.price}</p>
+          <p className="text-[11px] font-semibold text-indigo-600 mt-1">+ $150 Personalización</p>
+        </div>
       </div>
 
       <ColorPicker colorActual={color} onChange={onColorChange} />

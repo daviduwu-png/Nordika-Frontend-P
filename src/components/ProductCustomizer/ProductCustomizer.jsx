@@ -68,21 +68,23 @@ export default function ProductCustomizer() {
   }
 
   const mockupUI = getMockupForCategory(productoActual?.category);
+  const showSelector = productosDisponibles.length > 1;
 
   // ── UI principal ────────────────────────────────────────────────────────────
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 min-h-[600px] p-4">
-      
-      <div className="flex-1 bg-gray-50 rounded-3xl border border-gray-200 p-4 lg:p-10 flex flex-col items-center justify-start lg:justify-center relative shadow-sm overflow-hidden">
-        
+      <div
+        className={`flex-1 bg-gray-50 rounded-3xl border border-gray-200 p-4 lg:p-10 flex flex-col items-center justify-start lg:justify-center relative shadow-sm overflow-hidden ${
+          showSelector ? "lg:pl-28" : ""
+        }`}
+      >
         <ProductSelector
           productos={productosDisponibles}
           productoActual={productoActual}
           onSelect={seleccionarProducto}
         />
 
-        
         <MockupCanvas
           mockupImg={mockupUI.img}
           color={color}

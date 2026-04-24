@@ -3,6 +3,17 @@ import { Search, Frown, ShoppingCart } from "lucide-react";
 import { addCartItem } from "../store/cartStore";
 import { productService } from "../services/productService";
 
+const CATEGORY_LABELS = {
+  todos: "Todos",
+  shorts_box: "Shorts para box",
+  "sin-categoria": "Sin categoría",
+};
+
+const getCategoryLabel = (category) => {
+  const safeCategory = category || "sin-categoria";
+  return CATEGORY_LABELS[safeCategory] || safeCategory.replace(/_/g, " ");
+};
+
 export default function ProductGrid() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -53,7 +64,7 @@ export default function ProductGrid() {
                   : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
               }`}
             >
-              {cat}
+              {getCategoryLabel(cat)}
             </button>
           ))}
         </div>
@@ -113,7 +124,9 @@ export default function ProductGrid() {
               </div>
 
               <div className="p-4">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{producto.category || "General"}</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                  {getCategoryLabel(producto.category || "General")}
+                </p>
                 <h3 className="text-lg font-bold text-gray-900 truncate">{producto.name || "Producto sin nombre"}</h3>
                 <p className="text-indigo-600 font-bold mt-2">${producto.price || 0}</p>
               </div>
