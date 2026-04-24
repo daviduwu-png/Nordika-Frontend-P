@@ -2,6 +2,7 @@ import { useState } from "react";
 import { addCartItem } from "../store/cartStore";
 import { ShoppingBag, Truck, ShieldCheck, Ruler } from "lucide-react";
 import { sileo } from "sileo";
+import { getCategoryLabel } from "./ProductCustomizer/utils/mockupUtils.jsx";
 
 const CATEGORY_MOCKUPS = {
   playeras: "/mockups/playera.png",
@@ -48,7 +49,7 @@ export default function ProductDetail({ product }) {
       <div className="flex-1 space-y-8">
         <div>
           <span className="text-indigo-600 font-bold tracking-widest text-xs uppercase bg-indigo-50 px-3 py-1 rounded-full">
-            {product.category}
+            {getCategoryLabel(product.category)}
           </span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mt-4 mb-2 tracking-tight">{product.name}</h1>
           <p className="text-3xl font-bold text-gray-900">${product.price}</p>
