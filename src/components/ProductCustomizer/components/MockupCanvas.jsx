@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 
 export default function MockupCanvas({ mockupImg, color, logo, scale, draggableRef, fileInputRef, onRemoveLogo }) {
   return (
-    <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center select-none bg-white/50 rounded-2xl border border-gray-100/50 my-auto lg:my-0">
+    <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center select-none bg-white/50 rounded-2xl border border-gray-100/50 my-auto">
       <img
         src={mockupImg}
         alt="Base del producto"

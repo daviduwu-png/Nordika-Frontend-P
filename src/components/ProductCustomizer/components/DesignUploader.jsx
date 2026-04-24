@@ -31,8 +31,8 @@ export default function DesignUploader({ logo, scale, step, fileInputRef, onFile
           <input
             type="range"
             min="0.2"
-            max="4"
-            step="0.1"
+            max="1"
+            step="0.05"
             value={scale}
             onChange={(e) => onScaleChange(Number(e.target.value))}
             className="w-full accent-indigo-600 cursor-pointer"
