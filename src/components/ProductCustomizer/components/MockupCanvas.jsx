@@ -7,7 +7,7 @@ export default function MockupCanvas({ mockupImg, color, logo, scale, draggableR
       <img
         src={mockupImg}
         alt="Base del producto"
-        className="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none drop-shadow-2xl"
+        className="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none drop-shadow-2xl p-6"
       />
 
       <div
