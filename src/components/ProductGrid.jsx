@@ -58,7 +58,7 @@ export default function ProductGrid() {
             <button
               key={cat}
               onClick={() => setCategoriaActiva(cat)}
-              className={`px-4 py-2 rounded-full capitalize text-sm font-semibold transition ${
+              className={`px-4 py-2 rounded-full capitalize text-sm font-semibold transition whitespace-nowrap flex-shrink-0 ${
                 categoriaActiva === cat
                   ? "bg-black text-white"
                   : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
