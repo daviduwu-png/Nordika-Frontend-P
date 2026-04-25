@@ -130,8 +130,28 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
   }, [productos.length, isAutoPlayPaused, autoPlayMs]);
 
   if (cargando) {
+    if (isHero) {
+      return (
+        <div className="flex gap-3 overflow-x-hidden pb-4 px-1 md:px-0">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse shrink-0 basis-[63%] sm:basis-[46%] md:basis-[35%] lg:basis-[28%]"
+            >
+              <div className="aspect-square bg-gray-200" />
+              <div className="p-4 space-y-2">
+                <div className="h-3 bg-gray-200 rounded w-1/3" />
+                <div className="h-5 bg-gray-200 rounded w-2/3" />
+                <div className="h-5 bg-gray-200 rounded w-1/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     return (
-      <div className={`grid ${isHero ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2 md:grid-cols-4"} gap-4 md:gap-8`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
             <div className="aspect-square bg-gray-200" />
@@ -146,7 +166,13 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
     );
   }
 
-  if (productos.length === 0) return null;
+  if (productos.length === 0) {
+    if (isHero) {
+      return <div className="h-[18rem] sm:h-[19rem] md:h-[21rem]" aria-hidden="true" />;
+    }
+
+    return null;
+  }
 
   return (
     <div className="relative">
