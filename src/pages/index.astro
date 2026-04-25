@@ -5,56 +5,63 @@ import FeaturedProducts from "../components/FeaturedProducts.jsx";
 ---
 
 <Layout title="Bienvenido a Nordika Wear">
-  <section class="relative bg-gray-50 py-20 text-center overflow-hidden">
+  <section class="relative overflow-hidden isolate pt-16 pb-16 pt-20 md:pb-24">
     <div
-      class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-200 rounded-full blur-3xl opacity-20 -z-10"
+      class="absolute inset-x-0 top-0 h-[57%] md:h-[58%] z-0 overflow-hidden rounded-b-[1.75rem] md:rounded-b-[2.5rem]"
     >
+      <div class="absolute inset-0 bg-slate-900"></div>
+      <div
+        class="absolute inset-0"
+        style="background-image: linear-gradient(155deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.72));"
+      >
+      </div>
+      <div class="absolute inset-0 opacity-26">
+        <img src="/mockups/sudadera.png" alt="" class="w-full h-full object-cover scale-125" loading="eager" />
+      </div>
+      <div
+        class="absolute inset-0 opacity-30"
+        style="background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.7) 1px, transparent 1px); background-size: 24px 24px;"
+      >
+      </div>
     </div>
+    <div class="absolute inset-x-0 top-[57%] md:top-[58%] bottom-0 z-0 bg-white"></div>
 
     <div class="container mx-auto px-4 relative z-10">
-      <span class="text-indigo-600 font-bold tracking-widest uppercase text-xs mb-2 block">Nueva Colección 2026</span>
-      <h2 class="text-5xl md:text-7xl font-extrabold mb-6 text-gray-900 tracking-tight">
-        Ropa que habla <br />
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">por ti.</span>
-      </h2>
-      <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-        Diseños exclusivos, materiales premium y personalización total. Tu estilo no tiene límites.
-      </p>
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="text-slate-200/90 uppercase tracking-[0.2em] text-xs md:text-sm mb-3">Nueva temporada</p>
+        <h1 class="text-white text-4xl md:text-6xl font-black tracking-tight leading-[1.05]">Streetwear con actitud</h1>
+        <p class="text-slate-200/90 mt-4 text-base md:text-lg">
+          Descubre tus favoritos y arma tu outfit sin perder estilo.
+        </p>
+      </div>
 
-      <div class="flex gap-4 justify-center">
-        <a
-          href="/catalogo"
-          class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold hover:bg-gray-800 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-        >
-          Ver Colección
-        </a>
-        <a
-          href="#destacados"
-          class="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-full font-bold hover:bg-gray-50 transition"
-        >
-          Más vendidos
-        </a>
+      <div class="mt-10 max-w-6xl mx-auto">
+        <FeaturedProducts client:load variant="hero" />
       </div>
     </div>
   </section>
 
-  <section id="destacados" class="py-20 bg-white">
-    <div class="container mx-auto px-4">
+  <section id="destacados" class="relative py-20 bg-white overflow-hidden">
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-white via-indigo-50/20 to-white"></div>
+    <div class="absolute right-[-5%] top-8 z-0 w-56 h-56 opacity-10 pointer-events-none hidden md:block">
+      <img src="/mockups/sudadera.png" alt="" class="w-full h-full object-contain" loading="lazy" />
+    </div>
+    <div class="container mx-auto px-4 relative z-10">
       <div class="flex justify-between items-end mb-12">
         <div>
-          <h3 class="text-3xl font-bold text-gray-900">Tendencias de la semana</h3>
-          <p class="text-gray-500 mt-2">Las piezas favoritas de nuestra comunidad.</p>
+          <h3 class="text-3xl font-bold text-gray-900">Recién agregados</h3>
+          <p class="text-gray-500 mt-2">Descubre lo nuevo que está moviendo la tienda.</p>
         </div>
         <a
           href="/catalogo"
           class="hidden md:flex items-center text-indigo-600 font-bold hover:text-indigo-800 transition group"
         >
-          Ver todo el catálogo
+          Ver más
           <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
         </a>
       </div>
 
-      <FeaturedProducts client:load />
+      <FeaturedProducts client:load variant="new-arrivals" />
 
       <div class="mt-12 text-center md:hidden">
         <a
@@ -71,32 +78,46 @@ import FeaturedProducts from "../components/FeaturedProducts.jsx";
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
         <h3 class="text-3xl font-bold text-gray-900 tracking-tight">Por qué elegir Nordika</h3>
-        <p class="text-gray-500 mt-4 max-w-2xl mx-auto">Nos dedicamos a brindarte la mejor experiencia de compra con beneficios diseñados especialmente para ti.</p>
+        <p class="text-gray-500 mt-4 max-w-2xl mx-auto">
+          Nos dedicamos a brindarte la mejor experiencia de compra con beneficios diseñados especialmente para ti.
+        </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center max-w-6xl mx-auto">
         <div class="p-6 group hover:-translate-y-2 transition-transform duration-300">
-          <div class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all">
+          <div
+            class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all"
+          >
             <Truck size={28} strokeWidth={1.5} />
           </div>
           <h4 class="text-lg font-bold mb-3 text-gray-900 tracking-tight">Envío Rápido</h4>
-          <p class="text-gray-500 leading-relaxed text-sm">Recibe tus diseños personalizados en tiempo récord, directo a la puerta de tu casa.</p>
+          <p class="text-gray-500 leading-relaxed text-sm">
+            Recibe tus diseños personalizados en tiempo récord, directo a la puerta de tu casa.
+          </p>
         </div>
 
         <div class="p-6 group hover:-translate-y-2 transition-transform duration-300">
-          <div class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all">
+          <div
+            class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all"
+          >
             <Gem size={28} strokeWidth={1.5} />
           </div>
           <h4 class="text-lg font-bold mb-3 text-gray-900 tracking-tight">Calidad Premium</h4>
-          <p class="text-gray-500 leading-relaxed text-sm">Telas seleccionadas cuidadosamente para durar, mantener su forma y sentirse increíbles.</p>
+          <p class="text-gray-500 leading-relaxed text-sm">
+            Telas seleccionadas cuidadosamente para durar, mantener su forma y sentirse increíbles.
+          </p>
         </div>
 
         <div class="p-6 group hover:-translate-y-2 transition-transform duration-300">
-          <div class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all">
+          <div
+            class="w-16 h-16 bg-gray-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 shadow-sm group-hover:shadow-md transition-all"
+          >
             <ShieldCheck size={28} strokeWidth={1.5} />
           </div>
           <h4 class="text-lg font-bold mb-3 text-gray-900 tracking-tight">Cifrado Seguro</h4>
-          <p class="text-gray-500 leading-relaxed text-sm">Tus datos y transacciones están protegidas con tecnología de seguridad de última generación.</p>
+          <p class="text-gray-500 leading-relaxed text-sm">
+            Tus datos y transacciones están protegidas con tecnología de seguridad de última generación.
+          </p>
         </div>
       </div>
     </div>
@@ -117,9 +138,8 @@ import FeaturedProducts from "../components/FeaturedProducts.jsx";
         styles: {
           title: "text-blue-400 font-bold",
           description: "text-gray-300 text-center block w-full",
-        }
+        },
       });
     }, 400);
   }
 </script>
-
