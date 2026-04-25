@@ -13,17 +13,21 @@ export default function ProductSelector({ productos, productoActual, onSelect })
         const categoryLabel = getCategoryLabel(prod.category);
 
         return (
-          <div key={prod.id} className={`shrink-0 transition-all duration-200 ${isSelected ? "w-[108px] sm:w-[120px]" : "w-[88px] sm:w-[96px]"}`}>
+          <div key={prod.id} className="shrink-0 w-[88px] sm:w-[96px]">
             <button
               onClick={() => onSelect(prod)}
               title={productLabel}
-              className={`relative mx-auto rounded-2xl border-2 overflow-hidden bg-white shadow-sm transition-all duration-200 hover:scale-105 flex items-center justify-center ${
+              className={`relative mx-auto rounded-2xl border-2 overflow-hidden bg-white shadow-sm transition-all duration-200 flex items-center justify-center ${
                 isSelected
-                  ? "w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] border-indigo-600 shadow-indigo-300 shadow-xl ring-2 ring-indigo-600 ring-offset-2"
+                  ? "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] border-indigo-600 shadow-indigo-300 shadow-xl ring-2 ring-indigo-600 ring-offset-2"
                   : "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] border-gray-100 hover:border-indigo-300"
               }`}
             >
-              <img src={previewImg} alt={productLabel} className={`w-full h-full object-contain transition-all duration-200 ${isSelected ? "p-2" : "p-3"}`} />
+              <img
+                src={previewImg}
+                alt={productLabel}
+                className={`w-full h-full object-contain transition-all duration-200 ${isSelected ? "p-2.5" : "p-3"}`}
+              />
 
               <span className={`absolute bottom-1 right-1 ${isSelected ? "text-indigo-600" : "text-gray-300"}`}>
                 {icon}
