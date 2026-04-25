@@ -4,7 +4,7 @@ export default function ProductSelector({ productos, productoActual, onSelect })
   if (productos.length <= 1) return null;
 
   return (
-    <div className="z-40 flex flex-row lg:flex-col gap-3 sm:gap-4 overflow-x-auto lg:overflow-y-auto lg:max-h-[520px] w-full lg:w-auto pb-4 lg:pb-2 pt-1 lg:pt-2 mb-4 lg:mb-0 max-w-full hide-scrollbar shrink-0">
+    <div className="z-40 flex flex-row lg:flex-col gap-3 sm:gap-4 overflow-x-auto lg:overflow-y-auto lg:max-h-[520px] w-full lg:w-[124px] lg:pr-4 pb-4 lg:pb-2 pt-1 lg:pt-2 mb-4 lg:mb-0 max-w-full shrink-0">
       {productos.map((prod) => {
         const { img, icon } = getMockupForCategory(prod.category);
         const isSelected = productoActual?.id === prod.id;
@@ -19,7 +19,7 @@ export default function ProductSelector({ productos, productoActual, onSelect })
               title={productLabel}
               className={`relative mx-auto rounded-2xl border-2 overflow-hidden bg-white shadow-sm transition-all duration-200 flex items-center justify-center ${
                 isSelected
-                  ? "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] border-indigo-600 shadow-indigo-300 shadow-xl ring-2 ring-indigo-600 ring-offset-2"
+                  ? "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] border-indigo-600 ring-1 ring-indigo-600"
                   : "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] border-gray-100 hover:border-indigo-300"
               }`}
             >
