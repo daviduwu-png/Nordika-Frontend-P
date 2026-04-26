@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Search, Frown, ShoppingCart } from "lucide-react";
-import { addCartItem } from "../store/cartStore";
+import { Search, Frown, LayoutGrid, List } from "lucide-react";
 import { productService } from "../services/productService";
+import ProductCardGrid from "./catalog/ProductCardGrid";
+import ProductCardList from "./catalog/ProductCardList";
 
 const CATEGORY_LABELS = {
   todos: "Todos",
@@ -10,58 +11,104 @@ const CATEGORY_LABELS = {
 };
 
 const getCategoryLabel = (category) => {
-  const safeCategory = category || "sin-categoria";
-  return CATEGORY_LABELS[safeCategory] || safeCategory.replace(/_/g, " ");
+  const safe = category || "sin-categoria";
+  return CATEGORY_LABELS[safe] || safe.replace(/_/g, " ");
 };
+
+function SkeletonGrid() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
+          <div className="aspect-square bg-gray-100" />
+          <div className="p-4 space-y-2">
+            <div className="h-3 bg-gray-200 rounded w-1/3" />
+            <div className="h-4 bg-gray-200 rounded w-2/3" />
+            <div className="h-5 bg-gray-200 rounded w-1/4 mt-2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SkeletonList() {
+  return (
+    <div className="flex flex-col gap-3">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse flex h-28">
+          <div className="w-28 sm:w-36 bg-gray-100 shrink-0" />
+          <div className="flex flex-col justify-center px-4 py-3 gap-2 flex-1">
+            <div className="h-3 bg-gray-200 rounded w-1/4" />
+            <div className="h-5 bg-gray-200 rounded w-1/2" />
+            <div className="h-3 bg-gray-200 rounded w-3/4 hidden sm:block" />
+            <div className="h-5 bg-gray-200 rounded w-1/5 mt-1" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ViewToggle({ view, onChange }) {
+  return (
+    <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+      <button
+        title="Vista en cuadrícula"
+        onClick={() => onChange("grid")}
+        className={`flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 ${
+          view === "grid" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-400 hover:text-gray-700"
+        }`}
+      >
+        <LayoutGrid size={18} />
+      </button>
+      <button
+        title="Vista en lista"
+        onClick={() => onChange("list")}
+        className={`flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 ${
+          view === "list" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-400 hover:text-gray-700"
+        }`}
+      >
+        <List size={18} />
+      </button>
+    </div>
+  );
+}
 
 export default function ProductGrid() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [categoriaActiva, setCategoriaActiva] = useState("todos");
+  const [view, setView] = useState("grid"); // "grid" | "list"
 
   useEffect(() => {
     productService.getAllProducts().then((data) => {
-      setProductos(data);
+      setProductos(Array.isArray(data) ? data : []);
       setCargando(false);
     });
   }, []);
 
-  const productosFiltrados = productos.filter((producto) => {
-    const productName = producto.name || "";
-    const productCategory = producto.category || "";
-
-    const coincideTexto = productName.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideCategoria = categoriaActiva === "todos" || productCategory === categoriaActiva;
-
-    return coincideTexto && coincideCategoria;
+  const productosFiltrados = productos.filter((p) => {
+    const nombre = (p.name || "").toLowerCase();
+    const categoria = p.category || "";
+    return nombre.includes(busqueda.toLowerCase()) && (categoriaActiva === "todos" || categoria === categoriaActiva);
   });
 
   const categorias = ["todos", ...new Set(productos.map((p) => p.category || "sin-categoria"))];
 
-  if (cargando) {
-    return (
-      <div className="flex justify-center items-center py-32">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
-          <p className="text-gray-500 font-medium">Cargando productos...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-10">
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide">
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categorias.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategoriaActiva(cat)}
-              className={`px-4 py-2 rounded-full capitalize text-sm font-semibold transition whitespace-nowrap flex-shrink-0 ${
+              className={`px-4 py-2 rounded-full capitalize text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
                 categoriaActiva === cat
-                  ? "bg-black text-white"
-                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                  ? "bg-gray-900 text-white shadow-md"
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-gray-400"
               }`}
             >
               {getCategoryLabel(cat)}
@@ -69,87 +116,67 @@ export default function ProductGrid() {
           ))}
         </div>
 
-        <div className="relative w-full md:w-64 group">
-          <input
-            type="text"
-            placeholder="Buscar producto..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="peer w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
-          />
-          <Search
-            size={18}
-            className="absolute left-3 top-2.5 text-gray-400 peer-focus:text-indigo-600 transition-colors duration-300"
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 group">
+            <input
+              type="text"
+              placeholder="Buscar producto..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="peer w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-shadow text-sm"
+            />
+            <Search
+              size={17}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-indigo-500 transition-colors"
+            />
+          </div>
+
+          <ViewToggle view={view} onChange={setView} />
+
+          {!cargando && (
+            <span className="hidden sm:block text-sm text-gray-400 whitespace-nowrap">
+              {productosFiltrados.length} producto{productosFiltrados.length !== 1 && "s"}
+            </span>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {productosFiltrados.length > 0 ? (
-          productosFiltrados.map((producto) => (
-            <div
-              key={producto.id}
-              onClick={() => (window.location.href = `/producto/${producto.slug}`)}
-              className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer"
-            >
-              <div className="aspect-square overflow-hidden bg-gray-100 relative">
-                <img
-                  src={
-                    producto.image ||
-                    {
-                      playeras: "/mockups/playera.png",
-                      sudaderas: "/mockups/sudadera.png",
-                      gorras: "/mockups/gorra.png",
-                      tazas: "/mockups/taza.png",
-                      shorts_box: "/mockups/shorts-box.png",
-                    }[producto.category] ||
-                    "/mockups/playera.png"
-                  }
-                  alt={producto.name || "Producto"}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
+      {cargando && (view === "grid" ? <SkeletonGrid /> : <SkeletonList />)}
 
-                <div className="absolute inset-0 flex transition-all duration-300 opacity-100 items-end justify-end p-3 md:opacity-0 md:group-hover:opacity-100 md:items-center md:justify-center md:hover:bg-black/10">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addCartItem(producto);
-                    }}
-                    title="Añadir al carrito"
-                    className="bg-white text-gray-900 rounded-full shadow-lg hover:bg-indigo-600 hover:text-white transition-all duration-300 w-10 h-10 flex items-center justify-center md:w-auto md:h-auto md:p-3 md:transform md:translate-y-4 md:group-hover:translate-y-0"
-                  >
-                    <ShoppingCart size={18} className="md:w-5 md:h-5" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-4">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                  {getCategoryLabel(producto.category || "General")}
-                </p>
-                <h3 className="text-lg font-bold text-gray-900 truncate">{producto.name || "Producto sin nombre"}</h3>
-                <p className="text-indigo-600 font-bold mt-2">${producto.price || 0}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-20">
-            <div className="inline-flex bg-gray-100 p-4 rounded-full mb-4">
-              <Frown size={48} className="text-gray-400" />
-            </div>
-            <p className="text-xl text-gray-600 font-medium">No encontramos productos.</p>
-            <button
-              onClick={() => {
-                setBusqueda("");
-                setCategoriaActiva("todos");
-              }}
-              className="mt-4 text-indigo-600 hover:underline"
-            >
-              Limpiar filtros
-            </button>
+      {!cargando && productosFiltrados.length === 0 && (
+        <div className="text-center py-24">
+          <div className="inline-flex bg-gray-100 p-5 rounded-full mb-4">
+            <Frown size={44} className="text-gray-400" />
           </div>
-        )}
-      </div>
+          <p className="text-xl text-gray-600 font-semibold">No encontramos productos.</p>
+          <p className="text-sm text-gray-400 mt-1">Intenta cambiar los filtros o la búsqueda.</p>
+          <button
+            onClick={() => {
+              setBusqueda("");
+              setCategoriaActiva("todos");
+            }}
+            className="mt-5 text-indigo-600 font-semibold hover:underline text-sm"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      )}
+
+      {!cargando && productosFiltrados.length > 0 && view === "grid" && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {productosFiltrados.map((producto) => (
+            <ProductCardGrid key={producto.id} producto={producto} />
+          ))}
+        </div>
+      )}
+
+      {!cargando && productosFiltrados.length > 0 && view === "list" && (
+        <div className="flex flex-col gap-3">
+          {productosFiltrados.map((producto) => (
+            <ProductCardList key={producto.id} producto={producto} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
