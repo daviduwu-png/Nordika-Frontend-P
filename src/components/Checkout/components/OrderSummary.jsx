@@ -1,14 +1,16 @@
-import { ShieldCheck, Lock } from "lucide-react";
+import { ShieldCheck, Lock, Truck } from "lucide-react";
 
 export const ENVIO_GRATIS_DESDE = 999;
 export const COSTO_ENVIO = 150;
 
-export default function OrderSummary({ items, subtotal, envio, total }) {
+export default function OrderSummary({ items, subtotal, envio, total, className = "" }) {
   const faltaParaGratis = ENVIO_GRATIS_DESDE - subtotal;
   const progresoEnvio = Math.min((subtotal / ENVIO_GRATIS_DESDE) * 100, 100);
 
   return (
-    <div className="w-full lg:w-96 bg-gray-50 p-6 rounded-2xl border border-gray-200 lg:sticky lg:top-24 h-fit">
+    <div
+      className={`w-full lg:w-96 bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 lg:sticky lg:top-24 h-fit ${className}`.trim()}
+    >
       <h3 className="text-base font-bold text-gray-900 mb-5">Resumen del Pedido</h3>
 
       <div className="space-y-4 max-h-80 overflow-y-auto pr-2 mb-6">
@@ -51,22 +53,25 @@ export default function OrderSummary({ items, subtotal, envio, total }) {
         ))}
       </div>
 
-      <div className="flex gap-2 mb-5 pb-5 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row gap-2 mb-5 pb-5 border-b border-gray-200">
         <input
           type="text"
           placeholder="Código de descuento"
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          className="w-full sm:flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
         />
-        <button className="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-300 transition">
+        <button
+          type="button"
+          className="w-full sm:w-auto bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-300 transition"
+        >
           Aplicar
         </button>
       </div>
 
       {/* ── Banner de envío gratis ───────────────────────────────────────────── */}
       {envio === 0 ? (
-        <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
-          <span className="text-green-600 text-lg">🎉</span>
-          <p className="text-green-700 text-xs font-semibold">¡Envío gratis aplicado!</p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
+          <Truck size={16} className="text-blue-600 flex-shrink-0" />
+          <p className="text-blue-700 text-xs font-semibold">Envío gratis aplicado</p>
         </div>
       ) : (
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
