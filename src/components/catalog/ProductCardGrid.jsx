@@ -53,7 +53,7 @@ export default function ProductCardGrid({ producto }) {
         <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">
           {getCategoryLabel(producto.category)}
         </p>
-        <h3 className="text-sm font-bold text-gray-900 truncate leading-snug">{producto.name || "Producto"}</h3>
+        <h3 className="text-sm font-bold text-gray-900 leading-snug">{producto.name || "Producto"}</h3>
         <p className="text-indigo-600 font-extrabold mt-auto pt-3 text-base">
           ${Number(producto.price || 0).toFixed(2)}
         </p>

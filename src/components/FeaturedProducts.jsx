@@ -29,10 +29,12 @@ const formatPrice = (price) => {
   return `$${amount.toFixed(2)}`;
 };
 
-function SkeletonCard({ basisClass }) {
+function SkeletonCard({ basisClass, slideStyle }) {
   return (
     <a
-      className={`group relative bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse flex flex-col shrink-0 snap-start select-none ${basisClass}`}
+      data-slide
+      style={slideStyle}
+      className={`group relative bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse flex flex-col shrink-0 min-w-0 snap-start select-none ${basisClass}`}
     >
       <div className="aspect-square overflow-hidden bg-gray-100 relative">
         <span className="absolute top-2 left-2 z-10 rounded-full bg-gray-200 text-transparent text-[10px] font-semibold px-2.5 py-1 uppercase tracking-wide">
@@ -43,7 +45,18 @@ function SkeletonCard({ basisClass }) {
         <p className="text-xs text-transparent bg-gray-200 rounded max-w-[33%] uppercase tracking-wider mb-1">
           CATEGORIA
         </p>
-        <h3 className="text-lg font-bold text-transparent bg-gray-200 rounded max-w-[66%] truncate">Producto</h3>
+        <h3
+          className="text-lg font-bold text-transparent bg-gray-200 rounded max-w-[66%] leading-snug min-h-[3.25rem]"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            color: "transparent",
+          }}
+        >
+          Producto
+        </h3>
         <p
           className="text-sm text-transparent bg-gray-200 rounded leading-relaxed mt-1 min-h-[2.5rem]"
           style={{
@@ -74,9 +87,21 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
   const isNewArrivals = variant === "new-arrivals";
   const badgeText = isHero ? "Destacados" : isNewArrivals ? "Recien agregados" : "Mas vendido";
 
-  const basisClass = (isHero || isNewArrivals)
-    ? "basis-[42%] sm:basis-[28%] md:basis-[22%] lg:basis-[18%] xl:basis-[15%]"
-    : "basis-[58%] sm:basis-[48%] lg:basis-[31%] xl:basis-[24%]";
+  const heroSlideStyle = useMemo(() => {
+    if (!isHero) return undefined;
+    return {
+      flex: "0 0 clamp(11rem, 18vw, 14rem)",
+    };
+  }, [isHero]);
+
+  let basisClass;
+  if (isHero) {
+    basisClass = "basis-[50%] sm:basis-[33%] md:basis-[26%] lg:basis-[21%] xl:basis-[18%]";
+  } else if (isNewArrivals) {
+    basisClass = "basis-[42%] sm:basis-[28%] md:basis-[22%] lg:basis-[18%] xl:basis-[15%]";
+  } else {
+    basisClass = "basis-[58%] sm:basis-[48%] lg:basis-[31%] xl:basis-[24%]";
+  }
 
   const maxIndicators = 6;
   const visibleIndicators = useMemo(() => {
@@ -214,7 +239,9 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
         onTouchEnd={() => setIsAutoPlayPaused(false)}
       >
         {cargando
-          ? [...Array(skeletonCount)].map((_, i) => <SkeletonCard key={`sk-${i}`} basisClass={basisClass} />)
+          ? [...Array(skeletonCount)].map((_, i) => (
+              <SkeletonCard key={`sk-${i}`} basisClass={basisClass} slideStyle={heroSlideStyle} />
+            ))
           : productos.map((producto) => {
               const imagen = producto.image || MOCKUPS[producto.category] || "/mockups/playera.png";
               const description = (producto.description || "Sin descripcion disponible").trim();
@@ -234,6 +261,7 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
                   badge={badgeText}
                   href={href}
                   basisClass={basisClass}
+                  slideStyle={heroSlideStyle}
                 />
               );
             })}

@@ -3,12 +3,23 @@ const getCategoryLabel = (category) => {
   return category;
 };
 
-export default function FeaturedProductCard({ image, price, description, title, category, badge, href, basisClass }) {
+export default function FeaturedProductCard({
+  image,
+  price,
+  description,
+  title,
+  category,
+  badge,
+  href,
+  basisClass,
+  slideStyle,
+}) {
   return (
     <a
       data-slide
       href={href}
-      className={`group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer flex flex-col shrink-0 snap-start ${basisClass}`}
+      style={slideStyle}
+      className={`group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer flex flex-col shrink-0 min-w-0 snap-start ${basisClass}`}
     >
       <div className="aspect-square overflow-hidden bg-gray-100 relative">
         <span className="absolute top-2 left-2 z-10 rounded-full bg-gray-900 text-white text-[10px] font-semibold px-2.5 py-1 uppercase tracking-wide">
@@ -28,7 +39,17 @@ export default function FeaturedProductCard({ image, price, description, title, 
 
       <div className="p-4 flex flex-col flex-1">
         <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{getCategoryLabel(category)}</p>
-        <h3 className="text-lg font-bold text-gray-900 truncate">{title || "Producto"}</h3>
+        <h3
+          className="text-lg font-bold text-gray-900 leading-snug min-h-[3.25rem]"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {title || "Producto"}
+        </h3>
         <p
           className="text-sm text-gray-500 leading-relaxed mt-1 min-h-[2.5rem]"
           style={{

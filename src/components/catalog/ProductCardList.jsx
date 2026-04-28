@@ -28,7 +28,7 @@ export default function ProductCardList({ producto }) {
       onClick={() => (window.location.href = `/producto/${producto.slug}`)}
       className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer flex items-stretch gap-0"
     >
-      <div className="w-28 sm:w-36 md:w-44 shrink-0 bg-gray-50 overflow-hidden relative">
+      <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 shrink-0 bg-gray-50 overflow-hidden relative flex items-center justify-center">
         <img
           src={image}
           alt={producto.name || "Producto"}
@@ -41,7 +41,7 @@ export default function ProductCardList({ producto }) {
         <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">
           {getCategoryLabel(producto.category)}
         </p>
-        <h3 className="text-base font-bold text-gray-900 leading-snug truncate">{producto.name || "Producto"}</h3>
+        <h3 className="text-base font-bold text-gray-900 leading-snug">{producto.name || "Producto"}</h3>
         <p
           className="text-sm text-gray-500 mt-1 leading-relaxed hidden sm:block"
           style={{
