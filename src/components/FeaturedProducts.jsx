@@ -74,8 +74,8 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
   const isNewArrivals = variant === "new-arrivals";
   const badgeText = isHero ? "Destacados" : isNewArrivals ? "Recien agregados" : "Mas vendido";
 
-  const basisClass = isHero
-    ? "basis-[63%] sm:basis-[46%] md:basis-[35%] lg:basis-[28%]"
+  const basisClass = (isHero || isNewArrivals)
+    ? "basis-[42%] sm:basis-[28%] md:basis-[22%] lg:basis-[18%] xl:basis-[15%]"
     : "basis-[58%] sm:basis-[48%] lg:basis-[31%] xl:basis-[24%]";
 
   const maxIndicators = 6;
@@ -194,7 +194,7 @@ export default function FeaturedProducts({ variant = "featured", limit = 8, auto
     return null;
   }
 
-  const skeletonCount = 3;
+  const skeletonCount = 6;
 
   return (
     <div className="relative">
